@@ -1,0 +1,23 @@
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+*.tsbuildinfo
+
+# Python / FastAPI
+backend/.venv/
+backend/__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated runtime artifacts (automatically regenerated on backend startup)
+backend/veritas.db
+backend/storage/
+
+# OS / Editor / Review captures
+.DS_Store
+.env
+.env.*
+.impeccable/review/

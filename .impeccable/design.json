@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T18:00:00Z",
+  "title": "Design System: Veritas — AICTE Pre-Scrutiny & Forensics Workbench",
+  "extensions": {
+    "colorMeta": {
+      "cobalt": {
+        "role": "primary",
+        "displayName": "Cross-Reference Cobalt",
+        "canonical": "#1D4ED8",
+        "tonalRamp": ["#1E3A8A", "#1E40AF", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#EFF6FF"]
+      },
+      "veridian": {
+        "role": "secondary",
+        "displayName": "Statutory Veridian",
+        "canonical": "#0F766E",
+        "tonalRamp": ["#134E4A", "#115E59", "#0F766E", "#0D9488", "#14B8A6", "#2DD4BF", "#99F6E4", "#F0FDFA"]
+      },
+      "vermilion": {
+        "role": "secondary",
+        "displayName": "Forensic Vermilion",
+        "canonical": "#B91C1C",
+        "tonalRamp": ["#7F1D1D", "#991B1B", "#B91C1C", "#DC2626", "#EF4444", "#F87171", "#FECACA", "#FEF2F2"]
+      },
+      "amber": {
+        "role": "tertiary",
+        "displayName": "Advisory Amber",
+        "canonical": "#B45309",
+        "tonalRamp": ["#78350F", "#92400E", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FDE68A", "#FFFBEB"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Statutory Dossier Paper",
+        "canonical": "#F5F4F0",
+        "tonalRamp": ["#14181F", "#3F4756", "#5E6778", "#949BA6", "#D5D2C8", "#ECEAE3", "#F5F4F0", "#FFFFFF"]
+      },
+      "chamber": {
+        "role": "neutral",
+        "displayName": "Optical Inspection Chamber",
+        "canonical": "#10141A",
+        "tonalRamp": ["#0D1117", "#10141A", "#12171F", "#171C24", "#262E3B", "#384357", "#94A3B8", "#F1F5F9"]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Institution name and primary application identity in command and dossier headers."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "APH checklist rule titles, active optical exhibit headers, and drawer headers."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Forensic evidence descriptions, executive synthesis, and officer audit rationale."
+      },
+      "label": {
+        "displayName": "Monospace Telemetry Label",
+        "purpose": "Certificate IDs, perceptual hashes (pHash), GPS coordinates, ELA z-scores, and SHA-256 digests."
+      }
+    },
+    "shadows": [
+      {
+        "name": "specimen-stage",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.35)",
+        "purpose": "Separates the active PDF/photo specimen sheet from the dark optical inspection bed."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-fast",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Immediate state feedback on optical layer toggles, ELA opacity blending, and checklist focus."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Affirmative Statutory Action Button",
+      "kind": "button",
+      "refersTo": "button-affirmative",
+      "description": "Confirms verification or records an officer override clearing an advisory flag.",
+      "html": "<button class=\"ds-btn-affirmative\">● Accept / Override as Verified</button>",
+      "css": ".ds-btn-affirmative { background: #0F766E; color: #FFFFFF; border: 1px solid #0F766E; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 0; cursor: pointer; transition: background 150ms ease; } .ds-btn-affirmative:hover { background: #115E59; } .ds-btn-affirmative:focus-visible { outline: 2px solid #1D4ED8; outline-offset: 2px; }"
+    },
+    {
+      "name": "Isolated Adverse Show-Cause Button",
+      "kind": "button",
+      "refersTo": "button-adverse-isolated",
+      "description": "Outline-until-focused destructive action separated from routine confirmations.",
+      "html": "<button class=\"ds-btn-adverse\">▲ Confirm Deficiency / Show-Cause Flag</button>",
+      "css": ".ds-btn-adverse { background: transparent; color: #B91C1C; border: 1px solid #B91C1C; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 0; cursor: pointer; transition: background 150ms ease, color 150ms ease; } .ds-btn-adverse:hover, .ds-btn-adverse:focus-visible { background: #B91C1C; color: #FFFFFF; outline: 2px solid #1D4ED8; outline-offset: 2px; }"
+    },
+    {
+      "name": "Evidentiary Status Badge",
+      "kind": "chip",
+      "refersTo": "button-advisory",
+      "description": "Monospace geometric-prefixed status badge for forensic and APH compliance states.",
+      "html": "<span class=\"ds-chip-critical\">▲ CRITICAL FLAG · QR != OCR</span>",
+      "css": ".ds-chip-critical { display: inline-block; background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; padding: 2px 8px; font-family: monospace; font-size: 11px; font-weight: 700; border-radius: 0; }"
+    },
+    {
+      "name": "Officer Rationale Input",
+      "kind": "input",
+      "refersTo": "button-stage-active",
+      "description": "Rectilinear input field for mandatory statutory justification before committing an audit log entry.",
+      "html": "<input class=\"ds-input-rationale\" placeholder=\"Enter statutory justification or APH clause override reason...\" />",
+      "css": ".ds-input-rationale { width: 100%; background: #F5F4F0; color: #14181F; border: 1px solid #D5D2C8; padding: 6px 12px; font-size: 12px; border-radius: 0; } .ds-input-rationale:focus { border-color: #1D4ED8; outline: 2px solid #1D4ED8; outline-offset: 1px; }"
+    },
+    {
+      "name": "Co-Referenced Checklist Row",
+      "kind": "card",
+      "refersTo": "button-stage-active",
+      "description": "1px hairline-divided statutory rule row that focuses the corresponding exhibit on the optical stage.",
+      "html": "<div class=\"ds-row-checklist\"><div class=\"ds-row-top\"><span class=\"ds-badge\">▲ CRITICAL FLAG</span><span class=\"ds-link\">Inspect DOC-8841-NOC ↗</span></div><div class=\"ds-row-title\">APH Clause 2.14 · Applied Intake vs State NOC</div></div>",
+      "css": ".ds-row-checklist { background: #F5F4F0; border: 1px solid #D5D2C8; padding: 12px; cursor: pointer; transition: background 150ms ease; } .ds-row-checklist:hover { background: #FFFFFF; } .ds-row-top { display: flex; justify-content: space-between; font-family: monospace; font-size: 11px; } .ds-badge { color: #B91C1C; font-weight: 700; } .ds-link { color: #1D4ED8; font-weight: 600; } .ds-row-title { margin-top: 6px; font-size: 13px; font-weight: 600; color: #14181F; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The National Forensic Light-Table & Statutory Comparator Workbench",
+    "overview": "Veritas is built for high-consequence regulatory scrutiny under the All India Council for Technical Education (AICTE) Approval Process Handbook (APH 2024–2027). Rather than treating document validation as a generic SaaS dashboard with decorative gauges or opaque AI scores, Veritas divides the workspace into two physically grounded zones: a warm alabaster Statutory Dossier Ledger (#F5F4F0) for reading multi-document checklists and consistency tables under bright office lighting, and a calibrated dark Optical Inspection Chamber (#10141A / #0D1117) for inspecting high-DPI PDF certificates, Error Level Analysis (ELA) heatmaps, SIFT copy-move vectors, and computer-vision bounding boxes without glare.",
+    "keyCharacteristics": [
+      "Dual-zone polarity pairing warm statutory paper (#F5F4F0) with a dark optical comparator chamber (#10141A).",
+      "Zero-radius (0px) rectilinear precision with 1px hairline structural borders across all panels, tables, and controls.",
+      "Orthogonal SVG cross-lock tethers connecting decoded QR code payloads directly to conflicting printed OCR spans on the document specimen.",
+      "Live parameter calibration sliders (JPEG Q, GAIN, ELA MIX) driving real-time OpenCV recompression overlays alongside a monospaced (X, Y) cursor coordinate readout.",
+      "Deliberate spatial isolation and outline-until-focused gating on adverse deficiency / show-cause actions."
+    ],
+    "rules": [
+      {
+        "name": "The Evidentiary Signal Rule",
+        "body": "Saturated red, amber, and teal inks never appear as decorative accents; they appear only when tied to a specific forensic measurement, APH clause check, or source API status, always paired with a geometric prefix glyph (●, ▲, ◆, ○).",
+        "section": "colors"
+      },
+      {
+        "name": "The Dual-Zone Polarity Rule",
+        "body": "Text-heavy checklists and statutory tables live on warm alabaster paper (#F5F4F0); pixel-level document specimens, ELA heatmaps, and CV bounding boxes live inside the dark optical chamber (#10141A).",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Measurement Rule",
+        "body": "Every numeric readout—intake counts, carpet area in sq.m, Haversine GPS distance, ELA error levels, and confidence scores—uses font-variant-numeric: tabular-nums so columns and live slider readouts never jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Seam Rule",
+        "body": "Panels, metric cells, and checklist rows divide with 1px solid borders (#D5D2C8 on paper, #262E3B in the chamber), never with floating card shadows or thick colored side stripes.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do co-reference every checklist flag and consistency row to a concrete bounding box on the right-hand Optical Stage.",
+      "Do pair every semantic color state with a geometric prefix (●, ▲, ◆, ○) and explicit APH 2024–2027 clause or forensic metric.",
+      "Do isolate adverse regulatory actions (Confirm Deficiency / Show-Cause Flag) with empty space and outline-until-focused styling.",
+      "Do use monospace strictly for measurements, hashes, coordinates, timestamps, and certificate identifiers."
+    ],
+    "donts": [
+      "Don't place uppercase eyebrow/kicker labels above headings (h1–h4).",
+      "Don't use thick (>1px) colored left or right border stripes on checklist rows, alerts, or containers.",
+      "Don't use decorative glassmorphism, gradient text, neon glows, or unanchored circular gauges.",
+      "Don't present AI forensic findings as automated rejections; always frame them as evidence-linked advisory indicators subject to human officer disposition."
+    ]
+  }
+}
