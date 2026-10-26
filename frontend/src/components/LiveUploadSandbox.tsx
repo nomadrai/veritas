@@ -38,7 +38,7 @@ interface LiveAnalysisResult {
 export function LiveUploadSandbox({ onAuditCreated }: { onAuditCreated: () => void }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<LiveAnalysisResult | null>(null);
-  const [showEla, setShowEla] = useState(true);
+  const [showEla, setShowEla] = useState(false);
 
   const runPresetTest = async (presetKey: string) => {
     setLoading(true);
@@ -81,161 +81,152 @@ export function LiveUploadSandbox({ onAuditCreated }: { onAuditCreated: () => vo
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="border border-paper-border bg-paper-elevated p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-paper-border pb-3">
-          <h3 className="text-base font-semibold text-ink">
-            Live Pre-Scrutiny Forensic & CV Diagnostic Lab
-          </h3>
-          <span className="border border-cobalt/30 bg-cobalt-surface px-2.5 py-0.5 font-mono text-xs font-medium text-cobalt">
-            REAL-TIME PYTHON OPEN-CV + PyMuPDF ENGINE
-          </span>
+    <div className="space-y-5 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] pb-4">
+        <div>
+          <h2 className="text-lg font-bold text-[#0F172A]">
+            Upload Document or Campus Photo for Instant Pre-Scrutiny
+          </h2>
+          <p className="mt-0.5 text-xs text-[#475569]">
+            Upload any PDF certificate or JPEG/PNG campus photo from your computer—or click a sample file below—to run live OCR, QR verification, tamper heatmap (ELA), and duplicate photo detection.
+          </p>
         </div>
+        <span className="rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-1 text-xs font-semibold text-[#1D4ED8]">
+          Live Python Verification Engine
+        </span>
+      </div>
 
-        <p className="mt-2.5 text-xs leading-relaxed text-ink-secondary">
-          Upload any supporting PDF certificate or geotagged campus photograph from your machine—or
-          trigger one of the synthetic benchmark specimens below—to execute live Error Level Analysis
-          (ELA), QR-vs-OCR Cross-Lock, SIFT Copy-Move detection, EXIF Haversine GPS verification, and
-          64-bit Perceptual Hash (`pHash`) Clone Hunting.
-        </p>
+      {/* Upload Dropzone & Sample Test Buttons */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-6 text-center transition-colors hover:border-[#1D4ED8] hover:bg-[#EFF6FF]/40">
+          <Upload className="h-6 w-6 text-[#1D4ED8]" />
+          <span className="mt-2 text-sm font-semibold text-[#0F172A]">
+            Click to Upload PDF, JPEG, or PNG
+          </span>
+          <span className="mt-1 text-xs text-[#64748B]">
+            Checks QR vs. OCR text, PDF edits, ELA tamper heatmap, EXIF GPS & duplicate hashes
+          </span>
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.webp"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </label>
 
-        {/* Upload Dropzone & Instant Test Specimen Triggers */}
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label className="flex cursor-pointer flex-col items-center justify-center border border-dashed border-ink-muted bg-paper p-4 text-center transition-colors hover:border-cobalt hover:bg-cobalt-surface/30">
-            <Upload className="h-5 w-5 text-cobalt" />
-            <span className="mt-1.5 text-xs font-semibold text-ink">
-              Upload Custom PDF or JPEG/PNG Specimen
-            </span>
-            <span className="mt-0.5 font-mono text-[11px] text-ink-muted">
-              Runs PyMuPDF, pikepdf, OpenCV ELA, QRCodeDetector & imagehash live
-            </span>
-            <input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.webp"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-          </label>
-
-          <div className="space-y-1.5">
-            <div className="font-mono text-[11px] font-semibold text-ink-secondary">
-              OR RUN 1-CLICK BENCHMARK SPECIMEN THROUGH PYTHON PIPELINE:
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { id: "tampered_noc", label: "Tampered State NOC (QR!=OCR + ELA)", icon: FileText },
-                { id: "expired_fire_seal_clone", label: "Fire NOC (Cloned Seal SIFT)", icon: FileText },
-                { id: "cloned_nagpur_lab", label: "Cloned Lab Photo (pHash + Nagpur GPS)", icon: ImageIcon },
-                { id: "clean_affidavit", label: "Clean e-Stamp Affidavit (Valid DSC)", icon: FileText },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                return (
-                  <button
-                    key={btn.id}
-                    type="button"
-                    disabled={loading}
-                    onClick={() => runPresetTest(btn.id)}
-                    className="inline-flex items-center gap-1.5 border border-paper-border bg-paper px-2.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-cobalt hover:bg-cobalt-surface disabled:opacity-50"
-                  >
-                    <Icon className="h-3.5 w-3.5 text-cobalt" />
-                    {btn.label}
-                  </button>
-                );
-              })}
-            </div>
+        <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+          <div className="text-xs font-semibold text-[#334155]">
+            Or test with a pre-loaded sample file:
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {[
+              { id: "tampered_noc", label: "Altered State NOC (QR != Text)", icon: FileText },
+              { id: "expired_fire_seal_clone", label: "Expired Fire NOC (Cloned Seal)", icon: FileText },
+              { id: "cloned_nagpur_lab", label: "Duplicate Lab Photo (Nagpur GPS)", icon: ImageIcon },
+              { id: "clean_affidavit", label: "Authentic e-Stamp Affidavit", icon: FileText },
+            ].map((btn) => {
+              const Icon = btn.icon;
+              return (
+                <button
+                  key={btn.id}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => runPresetTest(btn.id)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-left text-xs font-medium text-[#1E293B] shadow-sm transition-colors hover:border-[#1D4ED8] hover:bg-[#EFF6FF]/50 disabled:opacity-50"
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-[#1D4ED8]" />
+                  <span>{btn.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center gap-2 border border-paper-border bg-paper-elevated p-8 font-mono text-xs text-ink">
-          <RefreshCw className="h-4 w-4 animate-spin text-cobalt" />
-          Executing OpenCV Error Level Analysis, SIFT Keypoint Matching, QR Decode & pHash Vector Search...
+        <div className="flex items-center justify-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-8 text-xs font-medium text-[#334155]">
+          <RefreshCw className="h-4 w-4 animate-spin text-[#1D4ED8]" />
+          Running OCR extraction, QR cross-lock, Error Level Analysis (ELA), and Perceptual Hash check...
         </div>
       )}
 
       {result && !loading && (
-        <div className="border border-paper-border bg-paper-elevated p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-paper-border pb-3">
+        <div className="rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] pb-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-cobalt" />
-              <h4 className="text-sm font-semibold text-ink">
-                Live Diagnostic Output: <span className="font-mono">{result.filename}</span>
-              </h4>
+              <Sparkles className="h-4 w-4 text-[#1D4ED8]" />
+              <h3 className="text-sm font-bold text-[#0F172A]">
+                Verification Report: <span className="font-mono">{result.filename}</span>
+              </h3>
             </div>
             <button
               type="button"
               onClick={() => setShowEla(!showEla)}
-              className="border border-ink bg-ink px-2.5 py-1 font-mono text-xs text-white"
+              className="rounded-lg border border-[#CBD5E1] bg-white px-3 py-1.5 text-xs font-semibold text-[#1E293B] shadow-sm hover:bg-[#F1F5F9]"
             >
-              {showEla ? "Showing: ELA Heatmap Overlay" : "Showing: Original Specimen"}
+              {showEla ? "Switch to Original Document View" : "Switch to Tamper Heatmap (ELA)"}
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="border border-chamber-border bg-chamber p-2">
+          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="flex items-center justify-center rounded-xl border border-[#CBD5E1] bg-white p-4">
               <img
                 src={
                   showEla
                     ? result.xray.ela.ela_heatmap_data_url
                     : result.xray.specimen_data_url
                 }
-                alt="Live Analyzed Specimen"
-                className="mx-auto max-h-80 object-contain"
+                alt="Inspected File Preview"
+                className="max-h-80 rounded object-contain"
               />
             </div>
 
-            <div className="space-y-2.5 font-mono text-xs">
-              <div className="border border-paper-border bg-paper p-2.5">
-                <div className="font-semibold text-ink">1. OpenCV Error Level Analysis (ELA)</div>
-                <div className="mt-1 text-ink-secondary">
-                  Mean Error: <strong>{result.xray.ela.mean_error}</strong> · Max Block Error:{" "}
-                  <strong>{result.xray.ela.max_block_error}</strong> · High-Z Tamper Hotspots:{" "}
-                  <strong className="text-vermilion">{result.xray.ela.hotspots.length}</strong>
-                </div>
-              </div>
-
-              <div className="border border-paper-border bg-paper p-2.5">
-                <div className="font-semibold text-ink">2. QR-vs-OCR Cross-Lock & SIFT Copy-Move</div>
-                <div className="mt-1 text-ink-secondary">
-                  Decoded QR Codes: <strong>{result.xray.qr_codes.length}</strong> · QR-OCR Conflicts:{" "}
+            <div className="space-y-3 text-xs">
+              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+                <div className="font-bold text-[#0F172A]">1. QR Code vs. Printed Text Check</div>
+                <div className="mt-1 text-[#475569]">
+                  QR Codes Found: <strong>{result.xray.qr_codes.length}</strong> · Discrepancies:{" "}
                   <strong
                     className={
                       result.xray.qr_ocr_discrepancies.length > 0
-                        ? "text-vermilion"
-                        : "text-veridian"
+                        ? "text-[#B91C1C]"
+                        : "text-[#0F766E]"
                     }
                   >
                     {result.xray.qr_ocr_discrepancies.length}
-                  </strong>{" "}
-                  · SIFT Cloned Regions:{" "}
-                  <strong
-                    className={
-                      result.xray.copy_move_regions.length > 0
-                        ? "text-vermilion"
-                        : "text-veridian"
-                    }
-                  >
-                    {result.xray.copy_move_regions.length}
                   </strong>
                 </div>
                 {result.xray.qr_ocr_discrepancies.map((d, i) => (
                   <div
                     key={i}
-                    className="mt-1.5 border border-vermilion-border bg-vermilion-surface p-1.5 text-[11px] text-vermilion"
+                    className="mt-2 rounded-md border border-[#FECACA] bg-[#FEF2F2] p-2 text-[#B91C1C]"
                   >
                     ▲ {d.explanation}
                   </div>
                 ))}
               </div>
 
+              <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+                <div className="font-bold text-[#0F172A]">
+                  2. Visual Tamper (ELA) & Seal Duplication
+                </div>
+                <div className="mt-1 text-[#475569]">
+                  Tamper Regions Flagged:{" "}
+                  <strong className="text-[#B91C1C]">{result.xray.ela.hotspots.length}</strong> ·
+                  Duplicated Stamps:{" "}
+                  <strong className="text-[#B91C1C]">
+                    {result.xray.copy_move_regions.length}
+                  </strong>
+                </div>
+              </div>
+
               {result.is_pdf && (
-                <div className="border border-paper-border bg-paper p-2.5">
-                  <div className="font-semibold text-ink">3. PDF Container & Font Forensics</div>
-                  <div className="mt-1 text-ink-secondary">
-                    Producer: <strong>{result.xray.pdf_forensics.producer}</strong> · %%EOF Trailers:{" "}
-                    <strong>{result.xray.pdf_forensics.eof_markers}</strong> · Font Anomalies:{" "}
-                    <strong className="text-vermilion">
+                <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+                  <div className="font-bold text-[#0F172A]">3. PDF Editing & Font Check</div>
+                  <div className="mt-1 text-[#475569]">
+                    Software: <strong>{result.xray.pdf_forensics.producer}</strong> · Revisions:{" "}
+                    <strong>{result.xray.pdf_forensics.eof_markers}</strong> · Font Mismatches:{" "}
+                    <strong className="text-[#B91C1C]">
                       {result.xray.pdf_forensics.font_anomalies.length}
                     </strong>
                   </div>
@@ -243,36 +234,23 @@ export function LiveUploadSandbox({ onAuditCreated }: { onAuditCreated: () => vo
               )}
 
               {result.cv_analysis && (
-                <div className="border border-paper-border bg-paper p-2.5">
-                  <div className="font-semibold text-ink">
-                    3. Clone Hunter (pHash) & EXIF Geo-Boundary
+                <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
+                  <div className="font-bold text-[#0F172A]">
+                    3. Duplicate Photo & GPS Location Check
                   </div>
-                  <div className="mt-1 text-ink-secondary">
-                    pHash: <strong>{result.cv_analysis.hashes.phash}</strong> · GPS Status:{" "}
-                    <strong
-                      className={
-                        result.cv_analysis.exif.geo_status === "VERIFIED_ON_CAMPUS"
-                          ? "text-veridian"
-                          : "text-vermilion"
-                      }
-                    >
-                      {result.cv_analysis.exif.geo_status}
-                    </strong>
-                  </div>
-                  <div className="mt-1 text-[11px] text-ink-secondary">
+                  <div className="mt-1 text-[#475569]">
                     {result.cv_analysis.exif.explanation}
                   </div>
                   {result.cv_analysis.clone_matches.length > 0 ? (
-                    <div className="mt-1.5 flex items-center gap-1.5 border border-vermilion-border bg-vermilion-surface p-1.5 text-[11px] font-semibold text-vermilion">
-                      <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                      CLONE HIT: Matches {result.cv_analysis.clone_matches[0].matched_inst_name} (
-                      {result.cv_analysis.clone_matches[0].similarity_percent}% similarity, pHash
-                      dist={result.cv_analysis.clone_matches[0].phash_hamming_distance})
+                    <div className="mt-2 flex items-center gap-1.5 rounded-md border border-[#FECACA] bg-[#FEF2F2] p-2 font-semibold text-[#B91C1C]">
+                      <ShieldAlert className="h-4 w-4 shrink-0" />
+                      Duplicate Match: {result.cv_analysis.clone_matches[0].matched_inst_name} (
+                      {result.cv_analysis.clone_matches[0].similarity_percent}% match)
                     </div>
                   ) : (
-                    <div className="mt-1.5 flex items-center gap-1.5 border border-veridian-border bg-veridian-surface p-1.5 text-[11px] text-veridian">
-                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                      Zero cross-college duplicate photos found in repository.
+                    <div className="mt-2 flex items-center gap-1.5 rounded-md border border-[#99F6E4] bg-[#F0FDFA] p-2 text-[#0F766E]">
+                      <CheckCircle2 className="h-4 w-4 shrink-0" />
+                      Unique campus photo — no cross-college duplicates found.
                     </div>
                   )}
                 </div>
