@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-paper: #F5F4F0;
+  --bg-paper-elevated: #FFFFFF;
+  --bg-paper-sunken: #ECEAE3;
+  --border-paper: #D5D2C8;
+  --bg-chamber: #10141A;
+  --bg-chamber-panel: #171C24;
+  --border-chamber: #262E3B;
+  --ink-primary: #14181F;
+  --ink-secondary: #3F4756;
+  --ink-muted: #555E6F;
+  --accent-cobalt: #1D4ED8;
+  --signal-vermilion: #B91C1C;
+  --signal-amber: #B45309;
+  --signal-veridian: #0F766E;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #949BA6 #ECEAE3;
+}
+
+.chamber-scroll {
+  scrollbar-color: #384357 #10141A;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ECEAE3;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #949BA6;
+  border-radius: 0px;
+}
+
+.chamber-scroll::-webkit-scrollbar-track {
+  background: #10141A;
+}
+
+.chamber-scroll::-webkit-scrollbar-thumb {
+  background-color: #384357;
+}
+
+::selection {
+  background-color: #1D4ED8;
+  color: #FFFFFF;
+}
+
+html,
+body {
+  background-color: var(--bg-paper);
+  color: var(--ink-primary);
+  caret-color: var(--accent-cobalt);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-cobalt);
+  outline-offset: 2px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Calibrated dark optical stage for the forensic chamber */
+.optical-grid-bg {
+  background-color: #0D1117;
+}
