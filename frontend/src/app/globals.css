@@ -3,52 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --bg-paper: #F5F4F0;
-  --bg-paper-elevated: #FFFFFF;
-  --bg-paper-sunken: #ECEAE3;
-  --border-paper: #D5D2C8;
-  --bg-chamber: #10141A;
-  --bg-chamber-panel: #171C24;
-  --border-chamber: #262E3B;
-  --ink-primary: #14181F;
-  --ink-secondary: #3F4756;
-  --ink-muted: #555E6F;
-  --accent-cobalt: #1D4ED8;
-  --signal-vermilion: #B91C1C;
-  --signal-amber: #B45309;
-  --signal-veridian: #0F766E;
+  --bg-canvas: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --border-subtle: #E2E8F0;
+  --ink-primary: #0F172A;
+  --ink-secondary: #475569;
+  --accent-navy: #1E3A8A;
+  --accent-blue: #1D4ED8;
 }
 
 * {
   box-sizing: border-box;
   scrollbar-width: thin;
-  scrollbar-color: #949BA6 #ECEAE3;
-}
-
-.chamber-scroll {
-  scrollbar-color: #384357 #10141A;
+  scrollbar-color: #CBD5E1 #F8FAFC;
 }
 
 *::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #ECEAE3;
+  background: #F8FAFC;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #949BA6;
-  border-radius: 0px;
-}
-
-.chamber-scroll::-webkit-scrollbar-track {
-  background: #10141A;
-}
-
-.chamber-scroll::-webkit-scrollbar-thumb {
-  background-color: #384357;
+  background-color: #CBD5E1;
+  border-radius: 4px;
 }
 
 ::selection {
@@ -58,10 +39,9 @@
 
 html,
 body {
-  background-color: var(--bg-paper);
+  background-color: var(--bg-canvas);
   color: var(--ink-primary);
-  caret-color: var(--accent-cobalt);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  caret-color: var(--accent-blue);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -70,15 +50,10 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-cobalt);
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
-}
-
-/* Calibrated dark optical stage for the forensic chamber */
-.optical-grid-bg {
-  background-color: #0D1117;
 }
