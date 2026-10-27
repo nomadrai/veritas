@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  postgres-pgvector:
+    image: pgvector/pgvector:pg16
+    container_name: veritas-pgvector
+    environment:
+      POSTGRES_USER: veritas
+      POSTGRES_PASSWORD: veritas_aicte_password
+      POSTGRES_DB: veritas_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/schema_pgvector.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+  veritas-backend:
+    build:
+      context: ./backend
+    container_name: veritas-backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://veritas:veritas_aicte_password@postgres-pgvector:5432/veritas_db
+      VERITAS_ENABLE_GPU_WORKER: "false"
+    depends_on:
+      - postgres-pgvector
+
+  veritas-frontend:
+    build:
+      context: ./frontend
+    container_name: veritas-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - veritas-backend
