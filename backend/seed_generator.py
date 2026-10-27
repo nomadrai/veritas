@@ -720,6 +720,123 @@ def _draw_ramp_scene() -> Image.Image:
     return img
 
 
+def _create_delhi_noc_9014_pdf(out_path: Path) -> None:
+    """
+    Creates a clean, authentic Delhi DTTE NOC PDF for Indraprastha Institute (AICTE-2026-NEW-9014).
+    """
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    page.draw_rect(pymupdf.Rect(0, 0, 595, 842), color=(0.985, 0.99, 0.995), fill=(0.985, 0.99, 0.995))
+    page.draw_rect(pymupdf.Rect(28, 28, 567, 814), color=(0.08, 0.36, 0.32), width=1.5)
+    page.draw_rect(pymupdf.Rect(33, 33, 562, 106), color=(0.06, 0.30, 0.28), fill=(0.06, 0.30, 0.28))
+    page.insert_text((48, 58), "GOVT. OF NCT OF DELHI · DIRECTORATE OF TRAINING & TECHNICAL EDUCATION", fontsize=11, fontname="helv", color=(1, 1, 1))
+    page.insert_text((48, 76), "STATUTORY NO-OBJECTION CERTIFICATE FOR NEW TECHNICAL INSTITUTION (LOA 2026-27)", fontsize=8.5, fontname="helv", color=(0.82, 0.96, 0.92))
+    page.insert_text((48, 92), "Certificate No: DTTE-DL-2026-9014 · Date of Issue: 2026-09-05 · Valid Up To: 2028-06-30", fontsize=8.5, fontname="helv", color=(0.98, 0.88, 0.45))
+
+    rows = [
+        ("1. AICTE Permanent Institution ID", "1-90148821"),
+        ("2. Name of Applicant Institution", "Indraprastha Institute of Autonomous Systems, New Delhi"),
+        ("3. Campus Location", "Institutional Area Phase-II, Okhla, New Delhi - 110020"),
+        ("4. Affiliating University", "Guru Gobind Singh Indraprastha University (GGSIPU), Delhi"),
+        ("5. Sanctioned Programme", "B.Tech in Robotics & Autonomous Systems"),
+        ("6. Approved Annual Intake", "120 Seats"),
+        ("7. Land & Built-up Carpet Area", "5.20 Acres / 11,400 Sq.m (100% Completed)"),
+    ]
+    y = 148
+    for label, val in rows:
+        page.draw_rect(pymupdf.Rect(48, y, 255, y + 32), color=(0.76, 0.84, 0.82), fill=(0.94, 0.98, 0.97), width=0.6)
+        page.draw_rect(pymupdf.Rect(255, y, 547, y + 32), color=(0.76, 0.84, 0.82), fill=(1, 1, 1), width=0.6)
+        page.insert_text((56, y + 20), label, fontsize=9.5, fontname="helv", color=(0.15, 0.25, 0.22))
+        page.insert_text((265, y + 20), val, fontsize=9.5, fontname="helv", color=(0.08, 0.14, 0.12))
+        y += 32
+
+    qr_payload = {
+        "cert_no": "DTTE-DL-2026-9014",
+        "inst_id": "1-90148821",
+        "approved_intake": 120,
+        "valid_upto": "2028-06-30",
+        "status": "VERIFIED",
+    }
+    qr_png = _make_qr_png_bytes(qr_payload)
+    page.insert_image(pymupdf.Rect(50, 560, 180, 690), stream=qr_png)
+    seal_png = _make_official_seal_png("DTTE GOVT OF NCT DELHI", "DIGITALLY SIGNED LOA", "DTTE-DL-9014", color_rgb=(12, 105, 88))
+    page.insert_image(pymupdf.Rect(380, 560, 500, 680), stream=seal_png)
+
+    doc.set_metadata(
+        {
+            "title": "Delhi DTTE NOC - DTTE-DL-2026-9014",
+            "author": "Directorate of Training & Technical Education, Delhi",
+            "creator": "Delhi e-District NIC Gateway v4.2",
+            "producer": "NIC PKCS#7 PDF Engine",
+            "creationDate": "D:20260905110000+05'30'",
+            "modDate": "D:20260905110000+05'30'",
+        }
+    )
+    doc.save(str(out_path))
+    doc.close()
+    with open(out_path, "ab") as f:
+        f.write(b"\n% /Type /Sig /SubFilter /adbe.pkcs7.detached\n")
+
+
+def _create_bengaluru_fsr_7720_pdf(out_path: Path) -> None:
+    """
+    Creates the VTU / Karnataka Faculty & Infrastructure Schedule PDF for Kaveri College (AICTE-2026-EOA-7720).
+    """
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    page.draw_rect(pymupdf.Rect(0, 0, 595, 842), color=(0.99, 0.985, 0.975), fill=(0.99, 0.985, 0.975))
+    page.draw_rect(pymupdf.Rect(28, 28, 567, 814), color=(0.55, 0.32, 0.08), width=1.5)
+    page.draw_rect(pymupdf.Rect(33, 33, 562, 106), color=(0.48, 0.26, 0.06), fill=(0.48, 0.26, 0.06))
+    page.insert_text((48, 58), "VISVESVARAYA TECHNOLOGICAL UNIVERSITY (VTU) · BELAGAVI, KARNATAKA", fontsize=11, fontname="helv", color=(1, 1, 1))
+    page.insert_text((48, 76), "ANNUAL ACADEMIC & FACULTY-STUDENT RATIO (FSR) AUDIT CERTIFICATE 2026-27", fontsize=8.5, fontname="helv", color=(0.98, 0.90, 0.78))
+    page.insert_text((48, 92), "Certificate No: VTU-KA-2026-7720 · Date: 2026-09-10 · Valid Up To: 2027-06-30", fontsize=8.5, fontname="helv", color=(1, 0.88, 0.42))
+
+    rows = [
+        ("1. AICTE Permanent Institution ID", "1-77201943"),
+        ("2. Name of Technical Institution", "Kaveri College of Engineering & Robotics, Bengaluru"),
+        ("3. Programme & Sanctioned Intake", "B.E. in Electronics & VLSI Design · 120 Seats (480 Total)"),
+        ("4. Required Faculty (APH 1:20 Norm)", "24 Regular Faculty Members (Minimum 4 Ph.D.)"),
+        ("5. Active Verified Regular Faculty", "21 Regular Faculty (SHORTFALL: -3 Faculty · FSR 1:22.8)"),
+        ("6. Building Completion Status", "Academic Wing-C Partial Occupation Certificate (Pending Final OC)"),
+    ]
+    y = 148
+    for label, val in rows:
+        is_warn = "SHORTFALL" in val or "Partial" in val
+        page.draw_rect(pymupdf.Rect(48, y, 255, y + 34), color=(0.82, 0.76, 0.68), fill=(0.98, 0.95, 0.90), width=0.6)
+        page.draw_rect(pymupdf.Rect(255, y, 547, y + 34), color=(0.82, 0.76, 0.68), fill=(1, 0.96, 0.94) if is_warn else (1, 1, 1), width=0.6)
+        page.insert_text((56, y + 21), label, fontsize=9.2, fontname="helv", color=(0.3, 0.2, 0.1))
+        page.insert_text((265, y + 21), val, fontsize=9.2, fontname="helv", color=(0.72, 0.12, 0.08) if is_warn else (0.1, 0.1, 0.1))
+        y += 34
+
+    qr_payload = {
+        "cert_no": "VTU-KA-2026-7720",
+        "inst_id": "1-77201943",
+        "approved_intake": 120,
+        "verified_faculty": 21,
+        "required_faculty": 24,
+        "valid_upto": "2027-06-30",
+    }
+    qr_png = _make_qr_png_bytes(qr_payload)
+    page.insert_image(pymupdf.Rect(50, 560, 180, 690), stream=qr_png)
+    seal_png = _make_official_seal_png("REGISTRAR VTU BELAGAVI", "ACADEMIC AUDIT CELL", "VTU-KA-7720", color_rgb=(140, 72, 16))
+    page.insert_image(pymupdf.Rect(380, 560, 500, 680), stream=seal_png)
+
+    doc.set_metadata(
+        {
+            "title": "VTU Faculty & Infrastructure Audit - VTU-KA-2026-7720",
+            "author": "Visvesvaraya Technological University (VTU)",
+            "creator": "VTU Affiliation Portal v3.8",
+            "producer": "VTU Digital Reporting Engine",
+            "creationDate": "D:20260910150000+05'30'",
+            "modDate": "D:20260910150000+05'30'",
+        }
+    )
+    doc.save(str(out_path))
+    doc.close()
+    with open(out_path, "ab") as f:
+        f.write(b"\n% /Type /Sig /SubFilter /adbe.pkcs7.detached\n")
+
+
 def ensure_seeded() -> None:
     init_db()
     STORAGE_DIR.mkdir(parents=True, exist_ok=True)
@@ -737,17 +854,23 @@ def ensure_seeded() -> None:
     fire_pdf_path = STORAGE_DIR / "fire_safety_8841.pdf"
     floor_pdf_path = STORAGE_DIR / "floor_plan_8841.pdf"
     affidavit_pdf_path = STORAGE_DIR / "affidavit_8841.pdf"
+    delhi_noc_9014_path = STORAGE_DIR / "dtte_noc_9014.pdf"
+    vtu_fsr_7720_path = STORAGE_DIR / "vtu_fsr_7720.pdf"
 
     _create_state_noc_pdf(noc_pdf_path)
     _create_fire_safety_pdf(fire_pdf_path)
     _create_floor_plan_pdf(floor_pdf_path)
     _create_affidavit_pdf(affidavit_pdf_path)
+    _create_delhi_noc_9014_pdf(delhi_noc_9014_path)
+    _create_bengaluru_fsr_7720_pdf(vtu_fsr_7720_path)
 
-    # Generate Infrastructure Photos (Historical Nagpur source + Cloned Pune submission + Classroom + Ramp)
+    # Generate Infrastructure Photos (Historical Nagpur source + Cloned Pune submission + Classroom + Ramp + Delhi + Bengaluru)
     hist_lab_path = STORAGE_DIR / "deccan_historical_lab_3109.jpg"
     clone_lab_path = STORAGE_DIR / "computer_lab_8841.jpg"
     classroom_path = STORAGE_DIR / "classroom_cr102_8841.jpg"
     ramp_path = STORAGE_DIR / "ramp_entrance_8841.jpg"
+    delhi_lab_9014_path = STORAGE_DIR / "robotics_lab_9014.jpg"
+    blr_lab_7720_path = STORAGE_DIR / "vlsi_lab_7720.jpg"
 
     orig_lab_img = _draw_computer_lab_scene(is_cloned_variant=False)
     _save_jpeg_with_exif(
@@ -788,6 +911,26 @@ def ensure_seeded() -> None:
         lat=18.4576,
         lng=73.8509,
         timestamp="2026:10:02 14:40:12",
+    )
+
+    # Distinct Delhi & Bengaluru Campus Photos with authentic on-campus GPS EXIF
+    _save_jpeg_with_exif(
+        ramp_img,
+        delhi_lab_9014_path,
+        lat=28.5452,
+        lng=77.2735,
+        timestamp="2026:10:12 10:15:00",
+        make="Sony",
+        model="Alpha A6400 Delhi Inspection",
+    )
+    _save_jpeg_with_exif(
+        classroom_img,
+        blr_lab_7720_path,
+        lat=12.8455,
+        lng=77.6605,
+        timestamp="2026:10:11 15:20:00",
+        make="Canon",
+        model="EOS M50 Bengaluru Inspection",
     )
 
     conn = get_connection()
@@ -908,6 +1051,8 @@ def ensure_seeded() -> None:
     fire_xray = run_full_document_xray(str(fire_pdf_path))
     floor_xray = run_full_document_xray(str(floor_pdf_path))
     aff_xray = run_full_document_xray(str(affidavit_pdf_path))
+    delhi_xray = run_full_document_xray(str(delhi_noc_9014_path))
+    vtu_xray = run_full_document_xray(str(vtu_fsr_7720_path))
 
     docs_to_insert = [
         (
@@ -1297,6 +1442,146 @@ def ensure_seeded() -> None:
                 ]
             ),
         ),
+        (
+            "DOC-9014-DTTE",
+            "AICTE-2026-NEW-9014",
+            "Delhi Govt DTTE NOC",
+            "Directorate of Training & Technical Education LOA NOC (DTTE-DL-2026-9014)",
+            str(delhi_noc_9014_path),
+            "Directorate of Training & Technical Education, Govt of NCT of Delhi",
+            "DTTE-DL-2026-9014",
+            "2026-09-05",
+            "2028-06-30",
+            "Verified",
+            json.dumps(
+                {
+                    "portal": "Delhi e-District / DigiLocker DTTE Gateway",
+                    "queried_at": "2026-10-26T09:14:00Z",
+                    "http_status": 200,
+                    "latency_ms": 134,
+                    "source_record": {
+                        "cert_no": "DTTE-DL-2026-9014",
+                        "inst_id": "1-90148821",
+                        "sanctioned_intake": 120,
+                        "status": "ACTIVE_LOA_APPROVED",
+                    },
+                    "discrepancy": None,
+                }
+            ),
+            97,
+            json.dumps(
+                {
+                    "Certificate Number": "DTTE-DL-2026-9014",
+                    "AICTE Permanent ID": "1-90148821",
+                    "Programme": "B.Tech in Robotics & Autonomous Systems",
+                    "Printed Intake (OCR)": "120 Seats",
+                    "QR Payload Intake": "120 Seats",
+                    "Valid Up To": "2028-06-30",
+                }
+            ),
+            json.dumps(delhi_xray["qr_codes"][0]["payload"] if delhi_xray["qr_codes"] else {}),
+            json.dumps(
+                {
+                    "producer": delhi_xray["pdf_forensics"]["producer"],
+                    "creator": delhi_xray["pdf_forensics"]["creator"],
+                    "creation_date": delhi_xray["pdf_forensics"]["creation_date"],
+                    "mod_date": delhi_xray["pdf_forensics"]["mod_date"],
+                    "eof_markers": 1,
+                    "incremental_updates": 0,
+                    "dominant_font": "Helvetica",
+                    "font_anomalies": [],
+                    "has_digital_signature": True,
+                }
+            ),
+            json.dumps([]),
+            json.dumps(
+                [
+                    {
+                        "id": "ANN-9014-1",
+                        "label": "QR-vs-OCR Cross-Lock: Verified (120 Seats)",
+                        "severity": "VERIFIED",
+                        "layer": "qr",
+                        "bbox": delhi_xray["qr_codes"][0]["bbox"] if delhi_xray["qr_codes"] else [0.084, 0.665, 0.218, 0.154],
+                    }
+                ]
+            ),
+        ),
+        (
+            "DOC-7720-VTU",
+            "AICTE-2026-EOA-7720",
+            "VTU Faculty & FSR Audit Report",
+            "Visvesvaraya Technological University Academic & FSR Schedule (VTU-KA-2026-7720)",
+            str(vtu_fsr_7720_path),
+            "Visvesvaraya Technological University (VTU), Belagavi",
+            "VTU-KA-2026-7720",
+            "2026-09-10",
+            "2027-06-30",
+            "Mismatch Detected",
+            json.dumps(
+                {
+                    "portal": "VTU Academic Affiliation & Faculty Registry API",
+                    "queried_at": "2026-10-26T09:15:10Z",
+                    "http_status": 200,
+                    "latency_ms": 152,
+                    "source_record": {
+                        "cert_no": "VTU-KA-2026-7720",
+                        "inst_id": "1-77201943",
+                        "verified_faculty": 21,
+                        "required_faculty_1_20": 24,
+                    },
+                    "discrepancy": "Active verified regular faculty is 21 against required 24 for 480 student strength (FSR 1:22.8).",
+                }
+            ),
+            88,
+            json.dumps(
+                {
+                    "Certificate Number": "VTU-KA-2026-7720",
+                    "AICTE Permanent ID": "1-77201943",
+                    "Required Faculty (1:20)": "24 Regular Faculty",
+                    "Verified Active Faculty": "21 Regular Faculty (SHORTFALL: -3)",
+                    "Building OC Status": "Wing-C Partial Occupation Certificate",
+                }
+            ),
+            json.dumps(vtu_xray["qr_codes"][0]["payload"] if vtu_xray["qr_codes"] else {}),
+            json.dumps(
+                {
+                    "producer": vtu_xray["pdf_forensics"]["producer"],
+                    "creator": vtu_xray["pdf_forensics"]["creator"],
+                    "creation_date": vtu_xray["pdf_forensics"]["creation_date"],
+                    "mod_date": vtu_xray["pdf_forensics"]["mod_date"],
+                    "eof_markers": 1,
+                    "incremental_updates": 0,
+                    "dominant_font": "Helvetica",
+                    "font_anomalies": [],
+                    "has_digital_signature": True,
+                }
+            ),
+            json.dumps(
+                [
+                    {
+                        "id": "FLAG-7720-FSR",
+                        "layer": "Module 1 · APH Faculty-Student Ratio Check",
+                        "severity": "HIGH",
+                        "title": "Faculty Shortfall: 21 Active Regular Faculty vs 24 Required (FSR 1:22.8)",
+                        "confidence": 0.99,
+                        "aph_clause": "AICTE APH 2024-27 Chapter VII Clause 7.1 (1:20 Minimum UG FSR)",
+                        "evidence": "VTU Faculty Registry and audit schedule confirm 21 regular faculty on payroll vs 24 required for 120 annual intake across 4 years.",
+                        "bbox": [0.445, 0.337, 0.470, 0.040],
+                    }
+                ]
+            ),
+            json.dumps(
+                [
+                    {
+                        "id": "ANN-7720-1",
+                        "label": "FSR DEFICIENCY: 21 Regular Faculty (Required: 24)",
+                        "severity": "CRITICAL",
+                        "layer": "ocr",
+                        "bbox": [0.445, 0.337, 0.470, 0.040],
+                    }
+                ]
+            ),
+        ),
     ]
 
     cur.executemany(
@@ -1323,6 +1608,12 @@ def ensure_seeded() -> None:
 
     ramp_hashes = compute_hashes_and_embedding(str(ramp_path))
     ramp_exif = extract_exif_and_verify_gps(str(ramp_path), 18.4575, 73.8508, 500.0)
+
+    delhi_hashes = compute_hashes_and_embedding(str(delhi_lab_9014_path))
+    delhi_exif = extract_exif_and_verify_gps(str(delhi_lab_9014_path), 28.5450, 77.2732, 500.0)
+
+    blr_hashes = compute_hashes_and_embedding(str(blr_lab_7720_path))
+    blr_exif = extract_exif_and_verify_gps(str(blr_lab_7720_path), 12.8452, 77.6602, 500.0)
 
     media_to_insert = [
         (
@@ -1478,6 +1769,80 @@ def ensure_seeded() -> None:
                     "status": "COMPLIANT",
                     "aph_clause": "APH 2024-27 Chapter VII Clause 7.9 (Barrier-Free Environment)",
                     "summary": "EXIF GPS verified (14.8m from campus center). Ramp gradient, dual handrails, tactile tiles, and fire hydrant meet APH norms.",
+                }
+            ),
+            json.dumps([]),
+        ),
+        (
+            "MEDIA-9014-RAMP",
+            "AICTE-2026-NEW-9014",
+            "1-90148821",
+            "Indraprastha Institute of Autonomous Systems, New Delhi",
+            0,
+            "Barrier-Free & Main Entrance",
+            "Okhla Phase-II Academic Block Entrance & 1:12 Ramp",
+            str(delhi_lab_9014_path),
+            delhi_hashes["phash"],
+            delhi_hashes["dhash"],
+            delhi_hashes["ahash"],
+            delhi_hashes["whash"],
+            json.dumps(delhi_hashes["embedding"]),
+            json.dumps(delhi_exif),
+            delhi_exif["distance_m"],
+            delhi_exif["geo_status"],
+            json.dumps(
+                [
+                    {
+                        "id": "CV-9014-RAMP",
+                        "label": "Barrier-Free 1:12 Ramp & Handrails Verified",
+                        "confidence": 0.96,
+                        "status": "VERIFIED",
+                        "bbox": [0.150, 0.600, 0.565, 0.380],
+                    }
+                ]
+            ),
+            json.dumps(
+                {
+                    "status": "COMPLIANT",
+                    "aph_clause": "APH 2024-27 Chapter VII (New Institution Infrastructure Readiness)",
+                    "summary": "EXIF GPS verified at Okhla New Delhi campus (36.8m from center). Zero duplicate photo matches.",
+                }
+            ),
+            json.dumps([]),
+        ),
+        (
+            "MEDIA-7720-CLASS",
+            "AICTE-2026-EOA-7720",
+            "1-77201943",
+            "Kaveri College of Engineering & Robotics, Bengaluru",
+            0,
+            "VLSI Lecture Hall",
+            "Electronic City Block-B Lecture Hall & Seminar Room",
+            str(blr_lab_7720_path),
+            blr_hashes["phash"],
+            blr_hashes["dhash"],
+            blr_hashes["ahash"],
+            blr_hashes["whash"],
+            json.dumps(blr_hashes["embedding"]),
+            json.dumps(blr_exif),
+            blr_exif["distance_m"],
+            blr_exif["geo_status"],
+            json.dumps(
+                [
+                    {
+                        "id": "CV-7720-BOARD",
+                        "label": "Smart Lecture Display & Desks Verified on Campus",
+                        "confidence": 0.95,
+                        "status": "VERIFIED",
+                        "bbox": [0.260, 0.258, 0.480, 0.216],
+                    }
+                ]
+            ),
+            json.dumps(
+                {
+                    "status": "COMPLIANT",
+                    "aph_clause": "APH 2024-27 Appendix-4 (Instructional Area Verification)",
+                    "summary": "EXIF GPS verified at Electronic City Bengaluru campus (46.8m from center).",
                 }
             ),
             json.dumps([]),
@@ -1664,22 +2029,22 @@ def ensure_seeded() -> None:
                     {
                         "id": "CHK-9014-1",
                         "category": "X-Ray Document Forensics",
-                        "rule": "QR-vs-OCR Cross-Lock & ELA Integrity across 4 Dossier PDFs",
+                        "rule": "QR-vs-OCR Cross-Lock & ELA Integrity on Delhi DTTE NOC",
                         "status": "VERIFIED",
                         "target_type": "document",
-                        "target_id": "DOC-8841-AFFIDAVIT",
+                        "target_id": "DOC-9014-DTTE",
                         "confidence": 0.99,
-                        "detail": "Zero incremental updates, consistent Helvetica typography, and uniform ELA compression across all pages.",
+                        "detail": "Zero incremental updates, consistent Helvetica typography, and verified QR payload (120 Seats).",
                     },
                     {
                         "id": "CHK-9014-2",
-                        "category": "Issuing Authority Verification",
-                        "rule": "GGSIPU University Consent of Affiliation Portal Sync",
-                        "status": "WARNING",
-                        "target_type": "document",
-                        "target_id": "DOC-8841-AFFIDAVIT",
-                        "confidence": 0.91,
-                        "detail": "Issuing authority API returned status `Pending` (awaiting Senate counter-signature); routed for manual confirmation.",
+                        "category": "Infrastructure & EXIF Geo-Boundary",
+                        "rule": "Okhla New Delhi Campus GPS & Barrier-Free Entrance Check",
+                        "status": "VERIFIED",
+                        "target_type": "media",
+                        "target_id": "MEDIA-9014-RAMP",
+                        "confidence": 0.97,
+                        "detail": "Campus photo verified 36.8m from registered Okhla Phase-II coordinates with 1:12 barrier-free ramp.",
                     },
                 ]
             ),
@@ -1727,10 +2092,20 @@ def ensure_seeded() -> None:
                         "rule": "APH Clause 7.1 · Faculty-Student Ratio (1:20 Norm)",
                         "status": "WARNING",
                         "target_type": "document",
-                        "target_id": "DOC-8841-FLOOR",
+                        "target_id": "DOC-7720-VTU",
                         "confidence": 0.98,
-                        "detail": "Verified faculty count is 21 against required 24 for 480 total student strength across 4 years.",
-                    }
+                        "detail": "VTU Audit Certificate (VTU-KA-2026-7720) confirms 21 regular faculty against required 24 for 480 total students.",
+                    },
+                    {
+                        "id": "CHK-7720-2",
+                        "category": "Infrastructure & EXIF Geo-Boundary",
+                        "rule": "Electronic City Bengaluru Campus GPS Verification",
+                        "status": "VERIFIED",
+                        "target_type": "media",
+                        "target_id": "MEDIA-7720-CLASS",
+                        "confidence": 0.96,
+                        "detail": "Lecture hall photo GPS verified 46.8m from registered Electronic City Phase-1 campus center.",
+                    },
                 ]
             ),
             json.dumps(
