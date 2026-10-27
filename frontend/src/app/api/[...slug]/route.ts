@@ -2,43 +2,50 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import snapshotData from "@/data/veritas_snapshot.json";
 
-const BACKEND_BASE =
-  process.env.BACKEND_URL ||
+const MODAL_BACKEND =
   "https://nomadrai--veritas-aicte-api-fastapi-app.us-east.modal.run";
 
 // Mutable in-memory state for serverless fallback
 const runtimeState = structuredClone(snapshotData) as typeof snapshotData;
 
 async function tryProxyToFastAPI(req: NextRequest, pathAfterApi: string): Promise<NextResponse | null> {
-  const url = `${BACKEND_BASE}/api/${pathAfterApi}${req.nextUrl.search}`;
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 18000);
-    const headers: Record<string, string> = {};
-    const contentType = req.headers.get("content-type");
-    if (contentType) headers["content-type"] = contentType;
+  const candidates =
+    process.env.VERCEL === "1"
+      ? [process.env.BACKEND_URL || MODAL_BACKEND]
+      : [process.env.BACKEND_URL || "http://127.0.0.1:8000", MODAL_BACKEND];
 
-    const body =
-      req.method !== "GET" && req.method !== "HEAD"
-        ? Buffer.from(await req.arrayBuffer())
-        : undefined;
+  const headers: Record<string, string> = {};
+  const contentType = req.headers.get("content-type");
+  if (contentType) headers["content-type"] = contentType;
 
-    const resp = await fetch(url, {
-      method: req.method,
-      headers,
-      body,
-      redirect: "follow",
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    if (!resp.ok && resp.status >= 500) {
-      return null;
+  const body =
+    req.method !== "GET" && req.method !== "HEAD"
+      ? Buffer.from(await req.arrayBuffer())
+      : undefined;
+
+  for (const base of candidates) {
+    const url = `${base}/api/${pathAfterApi}${req.nextUrl.search}`;
+    const timeoutMs = base.includes("127.0.0.1") ? 1500 : 18000;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      const resp = await fetch(url, {
+        method: req.method,
+        headers,
+        body,
+        redirect: "follow",
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (resp.ok || resp.status < 500) {
+        const data = await resp.json();
+        return NextResponse.json(data, { status: resp.status });
+      }
+    } catch {
+      // Try next candidate
     }
-    const data = await resp.json();
-    return NextResponse.json(data, { status: resp.status });
-  } catch {
-    return null;
   }
+  return null;
 }
 
 /**
