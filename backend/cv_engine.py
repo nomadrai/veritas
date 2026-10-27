@@ -13,6 +13,7 @@ from PIL import Image
 
 from database import get_connection
 from forensics_engine import _np_to_base64_png, compute_ela_analysis
+from pipelines.infra_cv import detect_infrastructure_objects_live
 
 
 def haversine_distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -267,6 +268,7 @@ def run_live_image_forensics_and_cv(
         hash_res["embedding"],
     )
     ela_res = compute_ela_analysis(img_rgb, quality=90, scale=18)
+    live_cv = detect_infrastructure_objects_live(img_rgb)
 
     return {
         "specimen_data_url": _np_to_base64_png(img_rgb),
@@ -281,4 +283,5 @@ def run_live_image_forensics_and_cv(
         "exif": exif_res,
         "clone_matches": clones,
         "ela": ela_res,
+        "live_cv": live_cv,
     }

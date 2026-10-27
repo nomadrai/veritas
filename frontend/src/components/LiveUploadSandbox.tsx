@@ -32,6 +32,17 @@ interface LiveAnalysisResult {
       phash_hamming_distance: number;
       similarity_percent: number;
     }>;
+    live_cv?: {
+      total_objects_detected: number;
+      counts: {
+        pc_monitors: number;
+        student_desks: number;
+        smart_boards: number;
+        fire_extinguishers: number;
+        accessibility_aids: number;
+      };
+      annotated_image_data_url: string;
+    };
   } | null;
 }
 
@@ -174,7 +185,8 @@ export function LiveUploadSandbox({ onAuditCreated }: { onAuditCreated: () => vo
                 src={
                   showEla
                     ? result.xray.ela.ela_heatmap_data_url
-                    : result.xray.specimen_data_url
+                    : result.cv_analysis?.live_cv?.annotated_image_data_url ||
+                      result.xray.specimen_data_url
                 }
                 alt="Inspected File Preview"
                 className="max-h-80 rounded object-contain"
@@ -236,9 +248,25 @@ export function LiveUploadSandbox({ onAuditCreated }: { onAuditCreated: () => vo
               {result.cv_analysis && (
                 <div className="rounded-lg border border-[#E2E8F0] bg-white p-3.5">
                   <div className="font-bold text-[#0F172A]">
-                    3. Duplicate Photo & GPS Location Check
+                    3. Live Object Detection (`supervision`) &amp; Clone Hunter
                   </div>
-                  <div className="mt-1 text-[#475569]">
+                  {result.cv_analysis.live_cv && (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                      <span className="rounded bg-[#EFF6FF] px-2 py-0.5 text-[#1D4ED8]">
+                        PC Monitors: {result.cv_analysis.live_cv.counts.pc_monitors}
+                      </span>
+                      <span className="rounded bg-[#F0FDFA] px-2 py-0.5 text-[#0F766E]">
+                        Desks: {result.cv_analysis.live_cv.counts.student_desks}
+                      </span>
+                      <span className="rounded bg-[#FEF3C7] px-2 py-0.5 text-[#92400E]">
+                        Smart Boards: {result.cv_analysis.live_cv.counts.smart_boards}
+                      </span>
+                      <span className="rounded bg-[#FEF2F2] px-2 py-0.5 text-[#B91C1C]">
+                        Fire Gear: {result.cv_analysis.live_cv.counts.fire_extinguishers}
+                      </span>
+                    </div>
+                  )}
+                  <div className="mt-1.5 text-[#475569]">
                     {result.cv_analysis.exif.explanation}
                   </div>
                   {result.cv_analysis.clone_matches.length > 0 ? (
