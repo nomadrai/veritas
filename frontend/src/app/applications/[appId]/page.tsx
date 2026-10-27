@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { DossierPayload, ApplicationSummary } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
+import { LayaDecisionPanel } from "@/components/LayaDecisionPanel";
 import snapshotData from "@/data/veritas_snapshot.json";
 import {
   CheckCircle2,
@@ -88,9 +89,10 @@ export default function ApplicationChecklistPage() {
     }
   };
 
-  const handleOfficerDecision = async (newStatus: string) => {
+  const handleOfficerDecision = async (newStatus: string, customRationale?: string) => {
     if (!dossier) return;
     const note =
+      customRationale ||
       rationale.trim() ||
       `Scrutiny Officer recorded disposition "${newStatus}" on application ${dossier.application.app_id}.`;
     setSubmitting(true);
@@ -438,17 +440,25 @@ export default function ApplicationChecklistPage() {
             </div>
           </div>
 
-          {/* Section 4: Officer Final Scrutiny Decision & Sign-Off */}
+          {/* Section 4: Officer Final Scrutiny Decision & Sign-Off (Powered by Laya System-1 Decision Engine) */}
           <div className="rounded-xl border border-[#CBD5E1] bg-white p-6 shadow-sm">
             <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
               <Gavel className="h-5 w-5 text-[#1E3A8A]" />
               <h2 className="text-lg font-bold text-[#0F172A]">
-                4. Scrutiny Officer Decision & Advisory Override
+                4. Laya System-1 Decision Copilot &amp; Scrutiny Officer Sign-Off
               </h2>
             </div>
-            <p className="mt-2 text-xs text-[#475569]">
-              Record your official committee observation or override an AI advisory flag. Every decision is cryptographically signed into the SHA-256 Audit Trail.
+            <p className="mt-2 mb-4 text-xs text-[#475569]">
+              Inspect Laya&apos;s calibrated System-1 decision primitives (<code>choice</code>, <code>score</code>, and <code>noul</code>) below, test counterfactual &ldquo;What-If&rdquo; overrides, or record your official committee decision into the SHA-256 Audit Trail.
             </p>
+
+            <LayaDecisionPanel
+              dossier={dossier}
+              submitting={submitting}
+              onApplyRecommendation={(status, autoRationale) =>
+                handleOfficerDecision(status, autoRationale)
+              }
+            />
 
             <div className="mt-4 space-y-3">
               <textarea
