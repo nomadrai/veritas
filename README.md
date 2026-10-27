@@ -5,12 +5,12 @@
 ### AI-Powered Application Validation, 3-Layer Document Forensics, and Infrastructure Compliance Verification Platform for AICTE
 
 [![Live Demo on Vercel](https://img.shields.io/badge/Live_Demo-veritas--aicte.vercel.app-1E3A8A?style=for-the-badge&logo=vercel&logoColor=white)](https://veritas-aicte.vercel.app)
+[![Live Backend API on Modal](https://img.shields.io/badge/Modal_16GB_API-Swagger_Docs-0F766E?style=for-the-badge&logo=fastapi&logoColor=white)](https://nomadrai--veritas-aicte-api-fastapi-app.us-east.modal.run/docs)
 [![Problem Statement](https://img.shields.io/badge/SIH_2026-PS_SIH26261-1D4ED8?style=for-the-badge)](https://veritas-aicte.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js_16-TypeScript-0F172A?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-OpenCV_&_PyMuPDF-0F766E?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-B45309?style=for-the-badge)](./LICENSE)
 
-**[Live Deployed Application](https://veritas-aicte.vercel.app)** · **[11-Page Technical Dossier (PDF)](./Veritas_AICTE_SIH26261_Technical_Dossier.pdf)** · **[Master Implementation Plan](./IMPLEMENTATION_PLAN.md)** · **[Design System Spec](./DESIGN.md)**
+**[Live Deployed Application (Vercel)](https://veritas-aicte.vercel.app)** · **[Live 16 GB RAM Backend API Docs (Modal)](https://nomadrai--veritas-aicte-api-fastapi-app.us-east.modal.run/docs)** · **[11-Page Technical Dossier (PDF)](./Veritas_AICTE_SIH26261_Technical_Dossier.pdf)** · **[Master Implementation Plan](./IMPLEMENTATION_PLAN.md)**
 
 </div>
 

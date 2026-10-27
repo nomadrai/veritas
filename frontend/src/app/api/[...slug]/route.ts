@@ -2,19 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import snapshotData from "@/data/veritas_snapshot.json";
 
-const BACKEND_BASE = process.env.BACKEND_URL || "http://127.0.0.1:8000";
+const BACKEND_BASE =
+  process.env.BACKEND_URL ||
+  "https://nomadrai--veritas-aicte-api-fastapi-app.us-east.modal.run";
 
-// Mutable in-memory state for serverless Vercel runtime interactions
+// Mutable in-memory state for serverless fallback
 const runtimeState = structuredClone(snapshotData) as typeof snapshotData;
 
 async function tryProxyToFastAPI(req: NextRequest, pathAfterApi: string): Promise<NextResponse | null> {
-  if (process.env.VERCEL === "1" && !process.env.BACKEND_URL) {
-    return null;
-  }
   const url = `${BACKEND_BASE}/api/${pathAfterApi}${req.nextUrl.search}`;
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 1500);
+    const timeout = setTimeout(() => controller.abort(), 18000);
     const headers: Record<string, string> = {};
     const contentType = req.headers.get("content-type");
     if (contentType) headers["content-type"] = contentType;
@@ -28,9 +27,13 @@ async function tryProxyToFastAPI(req: NextRequest, pathAfterApi: string): Promis
       method: req.method,
       headers,
       body,
+      redirect: "follow",
       signal: controller.signal,
     });
     clearTimeout(timeout);
+    if (!resp.ok && resp.status >= 500) {
+      return null;
+    }
     const data = await resp.json();
     return NextResponse.json(data, { status: resp.status });
   } catch {
