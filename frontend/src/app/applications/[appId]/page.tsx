@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { DossierPayload, ApplicationSummary } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
+import snapshotData from "@/data/veritas_snapshot.json";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -17,20 +18,41 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+function getInitialDossier(appId: string): DossierPayload {
+  const base = snapshotData.primary_dossier as unknown as DossierPayload;
+  if (appId === "AICTE-2026-EOA-8841") return base;
+  const sec = (
+    snapshotData.secondary_meta as unknown as Record<string, Partial<DossierPayload>>
+  )[appId];
+  if (sec) {
+    return {
+      ...base,
+      application: (sec.application as DossierPayload["application"]) || base.application,
+      institution: (sec.institution as DossierPayload["institution"]) || base.institution,
+      documents: (sec.documents as DossierPayload["documents"]) || base.documents,
+      infrastructure_media:
+        (sec.infrastructure_media as DossierPayload["infrastructure_media"]) ||
+        base.infrastructure_media,
+    };
+  }
+  return base;
+}
+
 export default function ApplicationChecklistPage() {
   const params = useParams();
   const appId = (params?.appId as string) || "AICTE-2026-EOA-8841";
 
-  const [dossier, setDossier] = useState<DossierPayload | null>(null);
-  const [applications, setApplications] = useState<ApplicationSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dossier, setDossier] = useState<DossierPayload | null>(() => getInitialDossier(appId));
+  const [applications, setApplications] = useState<ApplicationSummary[]>(
+    snapshotData.applications as ApplicationSummary[]
+  );
+  const [loading, setLoading] = useState(false);
   const [pingingDocId, setPingingDocId] = useState<string | null>(null);
   const [rationale, setRationale] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    setLoading(true);
     try {
       const [dossRes, appsRes] = await Promise.all([
         fetch(`/api/applications/${encodeURIComponent(appId)}?light=1`),
@@ -42,8 +64,8 @@ export default function ApplicationChecklistPage() {
       if (appsRes.ok) {
         setApplications(await appsRes.json());
       }
-    } finally {
-      setLoading(false);
+    } catch {
+      // Keep initial snapshot state
     }
   }, [appId]);
 

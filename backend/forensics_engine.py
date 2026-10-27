@@ -18,8 +18,8 @@ from pipelines.pdf_crypto import inspect_pdf_revision_tree_and_signatures
 def _np_to_base64_png(img_rgb: np.ndarray) -> str:
     pil_img = Image.fromarray(img_rgb)
     buf = io.BytesIO()
-    pil_img.save(buf, format="PNG")
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+    pil_img.save(buf, format="JPEG", quality=84)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
 
 def render_document_page_rgb(file_path: str, page_num: int = 0, dpi: int = 150) -> np.ndarray:
@@ -174,7 +174,7 @@ def detect_copy_move_sift(img_rgb: np.ndarray) -> List[Dict[str, Any]]:
     """
     gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
     h, w = gray.shape
-    sift = cv2.SIFT_create(nfeatures=1200)
+    sift = cv2.SIFT_create(nfeatures=350)
     keypoints, descriptors = sift.detectAndCompute(gray, None)
 
     if descriptors is None or len(keypoints) < 10:

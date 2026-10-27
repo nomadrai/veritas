@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { DossierPayload, DocumentXRay } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
+import snapshotData from "@/data/veritas_snapshot.json";
 import {
   FileText,
   QrCode,
@@ -22,7 +23,9 @@ function ForensicsStudioContent() {
   const appId = searchParams.get("app") || "AICTE-2026-EOA-8841";
   const initialDocId = searchParams.get("doc") || "DOC-8841-NOC";
 
-  const [dossier, setDossier] = useState<DossierPayload | null>(null);
+  const [dossier, setDossier] = useState<DossierPayload | null>(
+    () => snapshotData.primary_dossier as unknown as DossierPayload
+  );
   const [selectedDocId, setSelectedDocId] = useState<string>(initialDocId);
   const [viewLayer, setViewLayer] = useState<
     "standard" | "qr_lock" | "ela" | "jpeg_ghost" | "copymove"
@@ -34,19 +37,18 @@ function ForensicsStudioContent() {
   const [elaScale, setElaScale] = useState<number>(18);
   const [liveXray, setLiveXray] = useState<DocumentXRay | null>(null);
   const [recomputing, setRecomputing] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
       try {
         const res = await fetch(`/api/applications/${encodeURIComponent(appId)}`);
         if (res.ok) {
           const data: DossierPayload = await res.json();
           setDossier(data);
         }
-      } finally {
-        setLoading(false);
+      } catch {
+        // Keep initial snapshot
       }
     }
     load();

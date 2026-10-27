@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ApplicationSummary, DossierPayload } from "@/types/veritas";
+import { ApplicationSummary } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
+import snapshotData from "@/data/veritas_snapshot.json";
 import {
   Search,
   ArrowRight,
@@ -19,22 +20,23 @@ import {
 } from "lucide-react";
 
 export default function ScrutinyQueueDashboardPage() {
-  const [applications, setApplications] = useState<ApplicationSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [applications, setApplications] = useState<ApplicationSummary[]>(
+    snapshotData.applications as ApplicationSummary[]
+  );
+  const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<"SCRUTINY_OFFICER" | "NODAL_OFFICER">("SCRUTINY_OFFICER");
   const [filterStatus, setFilterStatus] = useState<"ALL" | "FLAGGED" | "READY">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function loadQueue() {
-      setLoading(true);
       try {
         const appsRes = await fetch("/api/applications");
         if (appsRes.ok) {
           setApplications(await appsRes.json());
         }
-      } finally {
-        setLoading(false);
+      } catch {
+        // Keep initial snapshot state
       }
     }
     loadQueue();

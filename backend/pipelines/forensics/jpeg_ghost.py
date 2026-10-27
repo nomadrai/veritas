@@ -16,14 +16,14 @@ from PIL import Image
 def _rgb_to_data_url(img_rgb: np.ndarray) -> str:
     pil_img = Image.fromarray(img_rgb)
     buf = io.BytesIO()
-    pil_img.save(buf, format="PNG")
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+    pil_img.save(buf, format="JPEG", quality=82)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
 
 def compute_jpeg_ghost_map(
     img_rgb: np.ndarray,
-    qualities: List[int] = [65, 75, 85, 92],
-    smoothing_window: int = 17,
+    qualities: List[int] = [72, 90],
+    smoothing_window: int = 15,
 ) -> Dict[str, Any]:
     """
     Sweeps across candidate JPEG qualities to detect spliced regions ("JPEG Ghosts")

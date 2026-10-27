@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { DossierPayload } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
 import { Blueprint3DViewer } from "@/components/floorplan3d/Blueprint3DViewer";
+import snapshotData from "@/data/veritas_snapshot.json";
 import {
   Camera,
   MapPin,
@@ -22,21 +23,22 @@ function InfrastructureContent() {
   const appId = searchParams.get("app") || "AICTE-2026-EOA-8841";
   const initialMediaId = searchParams.get("media") || "MEDIA-8841-LAB";
 
-  const [dossier, setDossier] = useState<DossierPayload | null>(null);
+  const [dossier, setDossier] = useState<DossierPayload | null>(
+    () => snapshotData.primary_dossier as unknown as DossierPayload
+  );
   const [selectedMediaId, setSelectedMediaId] = useState<string>(initialMediaId);
   const [viewMode, setViewMode] = useState<"cv_boxes" | "clone_compare" | "ela">("cv_boxes");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
       try {
         const res = await fetch(`/api/applications/${encodeURIComponent(appId)}`);
         if (res.ok) {
           setDossier(await res.json());
         }
-      } finally {
-        setLoading(false);
+      } catch {
+        // Keep initial snapshot
       }
     }
     load();

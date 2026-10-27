@@ -5,13 +5,16 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { DossierPayload } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
 import { LiveUploadSandbox } from "@/components/LiveUploadSandbox";
+import snapshotData from "@/data/veritas_snapshot.json";
 import { Lock, History, Building2, PlusCircle, ArrowRight, RefreshCw } from "lucide-react";
 
 function PortalAndAuditContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const appId = searchParams.get("app") || "AICTE-2026-EOA-8841";
-  const [dossier, setDossier] = useState<DossierPayload | null>(null);
+  const [dossier, setDossier] = useState<DossierPayload | null>(
+    () => snapshotData.primary_dossier as unknown as DossierPayload
+  );
 
   // Stage 1: New Application Form State
   const [instName, setInstName] = useState("Sardar Patel Institute of Advanced Robotics, Ahmedabad");
