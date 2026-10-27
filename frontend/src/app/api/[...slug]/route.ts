@@ -272,5 +272,116 @@ export async function POST(
     });
   }
 
+  if (path === "applications/create") {
+    const formData = await req.formData();
+    const instName = (formData.get("inst_name") as string) || "Sardar Patel Institute of Advanced Technology, Ahmedabad";
+    const instId = (formData.get("inst_id") as string) || "1-66402918";
+    const state = (formData.get("state") as string) || "Gujarat";
+    const city = (formData.get("city") as string) || "Ahmedabad";
+    const nodalOfficer = (formData.get("nodal_officer") as string) || "Dr. Vikramaditya Mehta";
+    const category = (formData.get("category") as string) || "EoA + Increase in Intake";
+    const courseName = (formData.get("course_name") as string) || "B.Tech in AI & Data Science";
+    const appliedIntake = Number(formData.get("applied_intake") || 180);
+    const histIntake = Number(formData.get("historical_eoa_intake") || 120);
+    const facultyCount = Number(formData.get("faculty_count") || 24);
+    const landAcres = Number(formData.get("declared_land_acres") || 6.5);
+    const builtupSqm = Number(formData.get("declared_builtup_sqm") || 12400);
+    const campusLat = Number(formData.get("campus_lat") || 23.0225);
+    const campusLng = Number(formData.get("campus_lng") || 72.5714);
+
+    const shortCode = String(Date.now()).slice(-4);
+    const newAppId = `AICTE-2026-EOA-${shortCode}`;
+    const intakeMismatch = appliedIntake !== histIntake;
+    const reqFaculty = Math.max(12, Math.round((appliedIntake * 4) / 20));
+    const fsrOk = facultyCount >= reqFaculty;
+    const flagCount = (intakeMismatch ? 1 : 0) + (fsrOk ? 0 : 1);
+    const riskScore = flagCount > 0 ? 68 : 16;
+    const overallStatus =
+      flagCount > 0
+        ? `Action Required · ${flagCount} Advisory Flags`
+        : "Ready for Committee Approval · 0 Flags";
+    const aiSummary = `Dynamically ingested dossier ${newAppId} for ${instName}: Applied intake = ${appliedIntake} (Sanctioned QR = ${histIntake}), Faculty = ${facultyCount} (Required >= ${reqFaculty} for 1:20 norm).`;
+
+    runtimeState.applications.unshift({
+      app_id: newAppId,
+      inst_id: instId,
+      inst_name: instName,
+      state,
+      city,
+      academic_year: "2026-2027",
+      category,
+      submitted_at: new Date().toISOString(),
+      applied_intake: appliedIntake,
+      historical_eoa_intake: histIntake,
+      overall_status: overallStatus,
+      risk_score: riskScore,
+      ai_summary: aiSummary,
+      nodal_officer: nodalOfficer,
+    });
+
+    (runtimeState.secondary_meta as Record<string, unknown>)[newAppId] = {
+      application: {
+        ...runtimeState.primary_dossier.application,
+        app_id: newAppId,
+        inst_id: instId,
+        category,
+        applied_intake: appliedIntake,
+        declared_land_acres: landAcres,
+        declared_builtup_sqm: builtupSqm,
+        overall_status: overallStatus,
+        risk_score: riskScore,
+        ai_summary: aiSummary,
+        consistency_flags: [
+          {
+            field: `Sanctioned Intake (${courseName})`,
+            app_form_value: `${appliedIntake} Seats`,
+            doc_ocr_value: `${appliedIntake} Seats (Uploaded NOC OCR)`,
+            qr_or_api_value: `${histIntake} Seats (Decoded QR Payload)`,
+            historical_aicte_db: `${histIntake} Seats (Prev EoA)`,
+            status: intakeMismatch ? "MISMATCH" : "VERIFIED",
+          },
+          {
+            field: "Faculty-Student Ratio (APH 1:20 Norm)",
+            app_form_value: `${facultyCount} Regular Faculty`,
+            doc_ocr_value: `${facultyCount} Faculty Verified`,
+            qr_or_api_value: `Required: >= ${reqFaculty} Faculty`,
+            historical_aicte_db: "APH Clause 7.1 (1:20 Norm)",
+            status: fsrOk ? "VERIFIED" : "DEFICIENT",
+          },
+        ],
+      },
+      institution: {
+        ...runtimeState.primary_dossier.institution,
+        inst_id: instId,
+        name: instName,
+        state,
+        city,
+        campus_lat: campusLat,
+        campus_lng: campusLng,
+        historical_eoa_intake: histIntake,
+        faculty_count: facultyCount,
+        nodal_officer: nodalOfficer,
+      },
+    };
+
+    appendSnapshotAudit(
+      newAppId,
+      "INSTITUTION NODAL OFFICER",
+      nodalOfficer,
+      "DYNAMIC_DOSSIER_SUBMITTED",
+      newAppId,
+      overallStatus,
+      aiSummary
+    );
+
+    return NextResponse.json({
+      status: "created",
+      app_id: newAppId,
+      overall_status: overallStatus,
+      risk_score: riskScore,
+      ai_summary: aiSummary,
+    });
+  }
+
   return NextResponse.json({ error: "Unsupported route" }, { status: 404 });
 }
