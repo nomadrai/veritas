@@ -11,9 +11,10 @@ import {
   Copy,
   Eye,
   CheckCircle2,
-  ShieldAlert,
   FileWarning,
   RefreshCw,
+  Layers,
+  Search,
 } from "lucide-react";
 
 function ForensicsStudioContent() {
@@ -23,7 +24,12 @@ function ForensicsStudioContent() {
 
   const [dossier, setDossier] = useState<DossierPayload | null>(null);
   const [selectedDocId, setSelectedDocId] = useState<string>(initialDocId);
-  const [viewLayer, setViewLayer] = useState<"standard" | "qr_lock" | "ela" | "copymove">("standard");
+  const [viewLayer, setViewLayer] = useState<
+    "standard" | "qr_lock" | "ela" | "jpeg_ghost" | "copymove"
+  >("standard");
+  const [loupeEnabled, setLoupeEnabled] = useState<boolean>(false);
+  const [loupePos, setLoupePos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+  const [loupeHover, setLoupeHover] = useState<boolean>(false);
   const [elaQuality, setElaQuality] = useState<number>(90);
   const [elaScale, setElaScale] = useState<number>(18);
   const [liveXray, setLiveXray] = useState<DocumentXRay | null>(null);
@@ -166,6 +172,7 @@ function ForensicsStudioContent() {
                   { id: "standard", label: "Annotated Certificate", icon: Eye },
                   { id: "qr_lock", label: "QR vs. Text Cross-Lock", icon: QrCode },
                   { id: "ela", label: "Tamper Heatmap (ELA)", icon: Flame },
+                  { id: "jpeg_ghost", label: "Sherloq JPEG Ghost", icon: Layers },
                   { id: "copymove", label: "Seal Duplication Check", icon: Copy },
                 ].map((mode) => {
                   const Icon = mode.icon;
@@ -186,6 +193,18 @@ function ForensicsStudioContent() {
                     </button>
                   );
                 })}
+                <button
+                  type="button"
+                  onClick={() => setLoupeEnabled(!loupeEnabled)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
+                    loupeEnabled
+                      ? "border-[#0F766E] bg-[#F0FDFA] text-[#0F766E]"
+                      : "border-[#CBD5E1] bg-white text-[#475569] hover:bg-[#F8FAFC]"
+                  }`}
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  {loupeEnabled ? "2.8× Loupe ON" : "Optical Loupe"}
+                </button>
               </div>
 
               {/* Friendly Sensitivity Controls when ELA Heatmap is active */}
@@ -225,6 +244,17 @@ function ForensicsStudioContent() {
             {/* Clean Light Slate Document Inspection Stage */}
             <div className="flex flex-1 items-start justify-center bg-[#F1F5F9] p-5">
               <div
+                onMouseEnter={() => setLoupeHover(true)}
+                onMouseLeave={() => setLoupeHover(false)}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  setLoupePos({
+                    x: Math.max(0, Math.min(100, x)),
+                    y: Math.max(0, Math.min(100, y)),
+                  });
+                }}
                 className="relative mx-auto w-full max-w-[430px] rounded-md border border-[#CBD5E1] bg-white shadow-md"
                 style={{
                   aspectRatio: `${currentXray.dimensions.width} / ${currentXray.dimensions.height}`,
@@ -234,11 +264,38 @@ function ForensicsStudioContent() {
                   src={
                     viewLayer === "ela"
                       ? currentXray.ela.ela_heatmap_data_url
+                      : viewLayer === "jpeg_ghost" &&
+                        currentXray.jpeg_ghost?.primary_ghost_heatmap_url
+                      ? currentXray.jpeg_ghost.primary_ghost_heatmap_url
                       : currentXray.specimen_data_url
                   }
                   alt={activeDoc.title}
                   className="block h-full w-full rounded-md object-contain"
                 />
+
+                {/* Stage 4: Optical Forensic Magnifier Loupe Overlay */}
+                {loupeEnabled && loupeHover && (
+                  <div
+                    style={{
+                      left: `calc(${loupePos.x}% - 75px)`,
+                      top: `calc(${loupePos.y}% - 75px)`,
+                      width: "150px",
+                      height: "150px",
+                      backgroundImage: `url(${
+                        viewLayer === "ela"
+                          ? currentXray.ela.ela_heatmap_data_url
+                          : viewLayer === "jpeg_ghost" &&
+                            currentXray.jpeg_ghost?.primary_ghost_heatmap_url
+                          ? currentXray.jpeg_ghost.primary_ghost_heatmap_url
+                          : currentXray.specimen_data_url
+                      })`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "280%",
+                      backgroundPosition: `${loupePos.x}% ${loupePos.y}%`,
+                    }}
+                    className="pointer-events-none absolute z-30 rounded-full border-2 border-[#1E3A8A] shadow-xl ring-2 ring-white"
+                  />
+                )}
 
                 {/* SVG Connector Lines for QR-vs-OCR Cross-Lock & Cloned Seals */}
                 <svg
@@ -442,6 +499,50 @@ function ForensicsStudioContent() {
                 ) : (
                   <div className="mt-2 rounded-lg border border-[#99F6E4] bg-[#F0FDFA] p-2.5 text-xs text-[#0F766E]">
                     ● Typography is uniform ({activeDoc.pdf_metadata.dominant_font}) across all text fields.
+                  </div>
+                )}
+
+                {/* Stage 4: pyHanko / pikepdf Incremental Revision Tree */}
+                {currentXray.revision_tree && (
+                  <div className="mt-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+                    <div className="font-semibold text-[#0F172A]">
+                      pyHanko Incremental Revision Diff Tree:
+                    </div>
+                    <div className="mt-1.5 space-y-1.5">
+                      {currentXray.revision_tree.revisions.map((rev) => (
+                        <div
+                          key={rev.revision_number}
+                          className="flex items-center justify-between rounded border border-[#CBD5E1] bg-white px-2.5 py-1.5 font-mono text-[11px]"
+                        >
+                          <span>
+                            Rev #{rev.revision_number} ({rev.byte_length.toLocaleString()} B)
+                          </span>
+                          <span
+                            className={`font-semibold ${
+                              rev.status.includes("TAMPERED")
+                                ? "text-[#B91C1C]"
+                                : "text-[#0F766E]"
+                            }`}
+                          >
+                            {rev.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Stage 4: Sherloq JPEG Ghost & 2D Resampling Telemetry */}
+                {currentXray.jpeg_ghost && (
+                  <div className="mt-2 flex items-center justify-between rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 font-mono text-[11px] text-[#334155]">
+                    <span>
+                      JPEG Ghost Peak Q={currentXray.jpeg_ghost.dominant_splice_quality}% (Contrast:{" "}
+                      {currentXray.jpeg_ghost.peak_ghost_contrast}×)
+                    </span>
+                    <span>
+                      2D FFT Resampled Patches:{" "}
+                      {currentXray.resampling?.resampled_patches.length || 0}
+                    </span>
                   </div>
                 )}
               </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { DossierPayload } from "@/types/veritas";
 import { AppShell } from "@/components/AppShell";
+import { Blueprint3DViewer } from "@/components/floorplan3d/Blueprint3DViewer";
 import {
   Camera,
   MapPin,
@@ -407,6 +408,9 @@ function InfrastructureContent() {
               </div>
             </div>
           </div>
+
+          {/* Stage 4: Interactive 2D-to-3D Blueprint Room Norm Extruder */}
+          <Blueprint3DViewer />
         </div>
       )}
     </AppShell>

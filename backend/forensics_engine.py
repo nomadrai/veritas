@@ -11,6 +11,9 @@ import pikepdf
 import pymupdf
 from PIL import Image
 
+from pipelines.forensics import compute_jpeg_ghost_map, compute_resampling_periodicity_map
+from pipelines.pdf_crypto import inspect_pdf_revision_tree_and_signatures
+
 
 def _np_to_base64_png(img_rgb: np.ndarray) -> str:
     pil_img = Image.fromarray(img_rgb)
@@ -457,6 +460,9 @@ def run_full_document_xray(
     ela_result = compute_ela_analysis(img_rgb, quality=quality, scale=scale)
     noise_result = compute_noise_variance_grid(img_rgb, grid_size=8)
     copy_move_regions = detect_copy_move_sift(img_rgb)
+    jpeg_ghost = compute_jpeg_ghost_map(img_rgb)
+    resampling = compute_resampling_periodicity_map(img_rgb)
+    revision_tree = inspect_pdf_revision_tree_and_signatures(file_path)
 
     # Perform automatic QR-vs-OCR Cross-Lock comparison against extracted PDF text spans
     qr_ocr_discrepancies: List[Dict[str, Any]] = []
@@ -515,4 +521,7 @@ def run_full_document_xray(
         "ela": ela_result,
         "noise_grid": noise_result,
         "copy_move_regions": copy_move_regions,
+        "jpeg_ghost": jpeg_ghost,
+        "resampling": resampling,
+        "revision_tree": revision_tree,
     }

@@ -99,11 +99,13 @@ export async function GET(
       return NextResponse.json(runtimeState.primary_dossier);
     }
     const sec = (
-      runtimeState.secondary_meta as Record<
+      runtimeState.secondary_meta as unknown as Record<
         string,
         {
           application: typeof runtimeState.primary_dossier.application;
           institution: typeof runtimeState.primary_dossier.institution;
+          documents?: unknown[];
+          infrastructure_media?: unknown[];
         }
       >
     )[appId];
@@ -112,6 +114,9 @@ export async function GET(
         ...runtimeState.primary_dossier,
         application: sec.application,
         institution: sec.institution,
+        documents: sec.documents || runtimeState.primary_dossier.documents,
+        infrastructure_media:
+          sec.infrastructure_media || runtimeState.primary_dossier.infrastructure_media,
       });
     }
     return NextResponse.json(runtimeState.primary_dossier);

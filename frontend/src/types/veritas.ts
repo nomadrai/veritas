@@ -87,6 +87,39 @@ export interface DocumentXRay {
   ela: ELAResult;
   noise_grid: NoiseGridResult;
   copy_move_regions: CopyMoveRegion[];
+  jpeg_ghost?: {
+    dominant_splice_quality: number;
+    peak_ghost_contrast: number;
+    primary_ghost_heatmap_url: string;
+  };
+  resampling?: {
+    patch_size: number;
+    median_periodicity: number;
+    resampled_patches: Array<{
+      row: number;
+      col: number;
+      bbox: [number, number, number, number];
+      periodicity_score: number;
+    }>;
+  };
+  revision_tree?: {
+    is_pdf: boolean;
+    total_revisions: number;
+    diff_policy_verdict: string;
+    revisions: Array<{
+      revision_number: number;
+      byte_length: number;
+      contains_signature: boolean;
+      incremental_delta_bytes: number;
+      status: string;
+    }>;
+    font_subsets: Array<{
+      page: string;
+      font_resource_key: string;
+      base_font: string;
+      subtype: string;
+    }>;
+  };
 }
 
 export interface ForensicFinding {
