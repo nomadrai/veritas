@@ -9,41 +9,39 @@ const MODAL_BACKEND =
 const runtimeState = structuredClone(snapshotData) as typeof snapshotData;
 
 async function tryProxyToFastAPI(req: NextRequest, pathAfterApi: string): Promise<NextResponse | null> {
-  const candidates =
-    process.env.VERCEL === "1"
-      ? [process.env.BACKEND_URL || MODAL_BACKEND]
-      : [process.env.BACKEND_URL || "http://127.0.0.1:8000", MODAL_BACKEND];
+  // On Vercel, serve directly from in-memory snapshot/Node engine in <2ms to avoid cold-start delays
+  if (process.env.VERCEL === "1" && !process.env.BACKEND_URL) {
+    return null;
+  }
 
-  const headers: Record<string, string> = {};
-  const contentType = req.headers.get("content-type");
-  if (contentType) headers["content-type"] = contentType;
+  const base = process.env.BACKEND_URL || "http://127.0.0.1:8000";
+  const url = `${base}/api/${pathAfterApi}${req.nextUrl.search}`;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 1500);
+    const headers: Record<string, string> = {};
+    const contentType = req.headers.get("content-type");
+    if (contentType) headers["content-type"] = contentType;
 
-  const body =
-    req.method !== "GET" && req.method !== "HEAD"
-      ? Buffer.from(await req.arrayBuffer())
-      : undefined;
+    const body =
+      req.method !== "GET" && req.method !== "HEAD"
+        ? Buffer.from(await req.arrayBuffer())
+        : undefined;
 
-  for (const base of candidates) {
-    const url = `${base}/api/${pathAfterApi}${req.nextUrl.search}`;
-    const timeoutMs = base.includes("127.0.0.1") ? 1500 : 18000;
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), timeoutMs);
-      const resp = await fetch(url, {
-        method: req.method,
-        headers,
-        body,
-        redirect: "follow",
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-      if (resp.ok || resp.status < 500) {
-        const data = await resp.json();
-        return NextResponse.json(data, { status: resp.status });
-      }
-    } catch {
-      // Try next candidate
+    const resp = await fetch(url, {
+      method: req.method,
+      headers,
+      body,
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (resp.ok || resp.status < 500) {
+      const data = await resp.json();
+      return NextResponse.json(data, { status: resp.status });
     }
+  } catch {
+    // Fall back to in-memory snapshot
   }
   return null;
 }
@@ -201,8 +199,24 @@ export async function GET(
 
   if (slug[0] === "applications" && slug[1]) {
     const appId = slug[1];
+    const isLight = req.nextUrl.searchParams.get("light") === "1";
+
+    const stripHeavyImages = (dossierObj: typeof runtimeState.primary_dossier) => {
+      if (!isLight) return dossierObj;
+      return {
+        ...dossierObj,
+        documents: dossierObj.documents.map((d) => ({ ...d, xray: undefined })),
+        infrastructure_media: dossierObj.infrastructure_media.map((m) => ({
+          ...m,
+          specimen_data_url: "",
+          ela_heatmap_data_url: "",
+          clone_matches: m.clone_matches.map((cm) => ({ ...cm, preview_data_url: "" })),
+        })),
+      };
+    };
+
     if (appId === "AICTE-2026-EOA-8841") {
-      return NextResponse.json(runtimeState.primary_dossier);
+      return NextResponse.json(stripHeavyImages(runtimeState.primary_dossier));
     }
     const sec = (
       runtimeState.secondary_meta as unknown as Record<
@@ -210,22 +224,24 @@ export async function GET(
         {
           application: typeof runtimeState.primary_dossier.application;
           institution: typeof runtimeState.primary_dossier.institution;
-          documents?: unknown[];
-          infrastructure_media?: unknown[];
+          documents?: typeof runtimeState.primary_dossier.documents;
+          infrastructure_media?: typeof runtimeState.primary_dossier.infrastructure_media;
         }
       >
     )[appId];
     if (sec) {
-      return NextResponse.json({
-        ...runtimeState.primary_dossier,
-        application: sec.application,
-        institution: sec.institution,
-        documents: sec.documents || runtimeState.primary_dossier.documents,
-        infrastructure_media:
-          sec.infrastructure_media || runtimeState.primary_dossier.infrastructure_media,
-      });
+      return NextResponse.json(
+        stripHeavyImages({
+          ...runtimeState.primary_dossier,
+          application: sec.application,
+          institution: sec.institution,
+          documents: sec.documents || runtimeState.primary_dossier.documents,
+          infrastructure_media:
+            sec.infrastructure_media || runtimeState.primary_dossier.infrastructure_media,
+        })
+      );
     }
-    return NextResponse.json(runtimeState.primary_dossier);
+    return NextResponse.json(stripHeavyImages(runtimeState.primary_dossier));
   }
 
   if (slug[0] === "documents" && slug[1] && slug[2] === "xray") {

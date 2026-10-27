@@ -14,13 +14,12 @@ from typing import Any, Dict, List
 import cv2
 import numpy as np
 from PIL import Image
-import supervision as sv
 
 
 def _rgb_to_data_url(img_rgb: np.ndarray) -> str:
     pil_img = Image.fromarray(img_rgb)
     buf = io.BytesIO()
-    pil_img.save(buf, format="JPEG", quality=88)
+    pil_img.save(buf, format="JPEG", quality=85)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
 
@@ -115,24 +114,33 @@ def detect_infrastructure_objects_live(img_rgb: np.ndarray) -> Dict[str, Any]:
         if 0.002 <= area_ratio <= 0.05 and by >= 0.65 * h:
             add_box(float(bx), float(by), float(bx + bw), float(by + bh), 4, 0.93, "Tactile Paving")
 
-    # Annotate image using `roboflow/supervision`
-    annotated_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
-    if xyxy_list:
-        detections = sv.Detections(
-            xyxy=np.array(xyxy_list, dtype=np.float32),
-            confidence=np.array(confidences, dtype=np.float32),
-            class_id=np.array(class_ids, dtype=int),
+    # Annotate image using lightweight OpenCV corner-bracket drawing (zero heavy dependencies)
+    annotated_rgb = img_rgb.copy()
+    palette = {
+        0: (29, 78, 216),   # PC Monitor - Cobalt
+        1: (15, 118, 110),  # Student Desk - Veridian
+        2: (180, 83, 9),    # Smart Board - Amber
+        3: (185, 28, 28),   # Fire Safety - Vermilion
+        4: (15, 118, 110),  # Accessibility - Veridian
+    }
+    for box, cls_id, conf, lbl in zip(xyxy_list, class_ids, confidences, labels):
+        x0, y0, x1, y1 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+        color = palette.get(cls_id, (29, 78, 216))
+        cv2.rectangle(annotated_rgb, (x0, y0), (x1, y1), color, 2)
+        tag = f"{lbl} {int(conf * 100)}%"
+        (tw, th), _ = cv2.getTextSize(tag, cv2.FONT_HERSHEY_SIMPLEX, 0.38, 1)
+        ty = max(th + 4, y0)
+        cv2.rectangle(annotated_rgb, (x0, ty - th - 4), (x0 + tw + 6, ty), color, -1)
+        cv2.putText(
+            annotated_rgb,
+            tag,
+            (x0 + 3, ty - 3),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.38,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA,
         )
-        corner_annotator = sv.BoxCornerAnnotator(thickness=2, corner_length=12)
-        label_annotator = sv.LabelAnnotator(text_scale=0.42, text_padding=4)
-        annotated_bgr = corner_annotator.annotate(scene=annotated_bgr, detections=detections)
-        annotated_bgr = label_annotator.annotate(
-            scene=annotated_bgr,
-            detections=detections,
-            labels=[f"{lbl} {int(c * 100)}%" for lbl, c in zip(labels, confidences)],
-        )
-
-    annotated_rgb = cv2.cvtColor(annotated_bgr, cv2.COLOR_BGR2RGB)
 
     counts = {
         "pc_monitors": sum(1 for c in class_ids if c == 0),

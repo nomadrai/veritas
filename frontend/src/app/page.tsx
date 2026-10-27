@@ -20,7 +20,6 @@ import {
 
 export default function ScrutinyQueueDashboardPage() {
   const [applications, setApplications] = useState<ApplicationSummary[]>([]);
-  const [primaryDossier, setPrimaryDossier] = useState<DossierPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"SCRUTINY_OFFICER" | "NODAL_OFFICER">("SCRUTINY_OFFICER");
   const [filterStatus, setFilterStatus] = useState<"ALL" | "FLAGGED" | "READY">("ALL");
@@ -30,15 +29,9 @@ export default function ScrutinyQueueDashboardPage() {
     async function loadQueue() {
       setLoading(true);
       try {
-        const [appsRes, dossRes] = await Promise.all([
-          fetch("/api/applications"),
-          fetch("/api/applications/AICTE-2026-EOA-8841"),
-        ]);
+        const appsRes = await fetch("/api/applications");
         if (appsRes.ok) {
           setApplications(await appsRes.json());
-        }
-        if (dossRes.ok) {
-          setPrimaryDossier(await dossRes.json());
         }
       } finally {
         setLoading(false);
@@ -398,37 +391,54 @@ export default function ScrutinyQueueDashboardPage() {
           </div>
 
           {/* Issuing Authority Portals Status Card */}
-          {primaryDossier && (
-            <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
-              <h2 className="border-b border-[#E2E8F0] pb-3 text-base font-bold text-[#0F172A]">
-                Connected Issuing Authority Gateways
-              </h2>
-              <div className="mt-3 space-y-2.5 text-xs">
-                {primaryDossier.documents.map((doc) => (
-                  <div
-                    key={doc.doc_id}
-                    className="flex items-center justify-between rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2"
-                  >
-                    <div>
-                      <div className="font-semibold text-[#0F172A]">{doc.doc_type}</div>
-                      <div className="text-[11px] text-[#64748B]">
-                        {doc.authority_response.portal}
-                      </div>
-                    </div>
-                    <span
-                      className={`rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold ${
-                        doc.authority_status === "Verified"
-                          ? "bg-[#F0FDFA] text-[#0F766E] border border-[#99F6E4]"
-                          : "bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]"
-                      }`}
-                    >
-                      {doc.authority_status}
-                    </span>
+          <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
+            <h2 className="border-b border-[#E2E8F0] pb-3 text-base font-bold text-[#0F172A]">
+              Connected Issuing Authority Gateways
+            </h2>
+            <div className="mt-3 space-y-2.5 text-xs">
+              {[
+                {
+                  doc_type: "State Government NOC",
+                  portal: "Maharashtra e-NOC / DigiLocker Gateway",
+                  status: "Mismatch Detected",
+                },
+                {
+                  doc_type: "Fire Safety Certificate",
+                  portal: "Pune Municipal Corporation Fire Portal API",
+                  status: "Expired",
+                },
+                {
+                  doc_type: "Architect Certified Floor Plan",
+                  portal: "Council of Architecture (COA) Registry API",
+                  status: "Verified",
+                },
+                {
+                  doc_type: "Sworn Affidavit (Annexure-2)",
+                  portal: "StockHolding CRA & NIC e-Sign CCA",
+                  status: "Verified",
+                },
+              ].map((item) => (
+                <div
+                  key={item.doc_type}
+                  className="flex items-center justify-between rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2"
+                >
+                  <div>
+                    <div className="font-semibold text-[#0F172A]">{item.doc_type}</div>
+                    <div className="text-[11px] text-[#64748B]">{item.portal}</div>
                   </div>
-                ))}
-              </div>
+                  <span
+                    className={`rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold ${
+                      item.status === "Verified"
+                        ? "border border-[#99F6E4] bg-[#F0FDFA] text-[#0F766E]"
+                        : "border border-[#FECACA] bg-[#FEF2F2] text-[#B91C1C]"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </AppShell>

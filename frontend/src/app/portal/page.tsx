@@ -32,7 +32,7 @@ function PortalAndAuditContent() {
   const [createdBanner, setCreatedBanner] = useState<{ appId: string; summary: string } | null>(null);
 
   const loadDossier = useCallback(async () => {
-    const res = await fetch(`/api/applications/${encodeURIComponent(appId)}`);
+    const res = await fetch(`/api/applications/${encodeURIComponent(appId)}?light=1`);
     if (res.ok) {
       setDossier(await res.json());
     }

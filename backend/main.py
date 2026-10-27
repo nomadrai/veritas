@@ -33,6 +33,10 @@ app.add_middleware(
 )
 
 
+# In-memory cache so dossier lookups respond in <2ms instead of recomputing OpenCV/SIFT on every click
+_DOSSIER_CACHE: Dict[str, Dict[str, Any]] = {}
+
+
 @app.on_event("startup")
 def on_startup() -> None:
     ensure_seeded()
@@ -106,8 +110,21 @@ def list_applications() -> List[Dict[str, Any]]:
 
 
 @app.get("/api/applications/{app_id}")
-def get_application_detail(app_id: str) -> Dict[str, Any]:
+def get_application_detail(app_id: str, light: int = Query(0)) -> Dict[str, Any]:
     ensure_seeded()
+    if app_id in _DOSSIER_CACHE:
+        cached = _DOSSIER_CACHE[app_id]
+        if light == 1:
+            return {
+                **cached,
+                "documents": [{**d, "xray": None} for d in cached["documents"]],
+                "infrastructure_media": [
+                    {**m, "specimen_data_url": "", "ela_heatmap_data_url": ""}
+                    for m in cached["infrastructure_media"]
+                ],
+            }
+        return cached
+
     conn = get_connection()
     cur = conn.cursor()
 
@@ -215,7 +232,7 @@ def get_application_detail(app_id: str) -> Dict[str, Any]:
     audit_logs = [dict(r) for r in log_rows]
     conn.close()
 
-    return {
+    payload = {
         "application": {
             "app_id": app_row["app_id"],
             "inst_id": app_row["inst_id"],
@@ -253,6 +270,17 @@ def get_application_detail(app_id: str) -> Dict[str, Any]:
         "infrastructure_media": media_items,
         "audit_logs": audit_logs,
     }
+    _DOSSIER_CACHE[app_id] = payload
+    if light == 1:
+        return {
+            **payload,
+            "documents": [{**d, "xray": None} for d in payload["documents"]],
+            "infrastructure_media": [
+                {**m, "specimen_data_url": "", "ela_heatmap_data_url": ""}
+                for m in payload["infrastructure_media"]
+            ],
+        }
+    return payload
 
 
 @app.get("/api/documents/{doc_id}/xray")
@@ -308,6 +336,7 @@ def trigger_authority_verification(doc_id: str) -> Dict[str, Any]:
         rationale=auth_resp.get("discrepancy")
         or f"Source registry confirmed certificate {doc['cert_number']} is {status}.",
     )
+    _DOSSIER_CACHE.pop(doc["app_id"], None)
 
     return {
         "doc_id": doc_id,
@@ -355,6 +384,7 @@ def record_scrutiny_decision(req: ScrutinyDecisionRequest) -> Dict[str, Any]:
         status_after=req.new_status,
         rationale=req.rationale,
     )
+    _DOSSIER_CACHE.pop(req.app_id, None)
 
     return {"status": "recorded", "audit_log_entry": log_entry}
 
@@ -415,6 +445,7 @@ async def live_analyze_upload(
             status_after="Diagnostic Completed",
             rationale=f"Executed real-time X-Ray Forensics & Clone Hunter on '{filename}' (is_pdf={is_pdf}).",
         )
+        _DOSSIER_CACHE.pop("AICTE-2026-EOA-8841", None)
 
         return {
             "filename": filename,

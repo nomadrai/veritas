@@ -33,7 +33,7 @@ export default function ApplicationChecklistPage() {
     setLoading(true);
     try {
       const [dossRes, appsRes] = await Promise.all([
-        fetch(`/api/applications/${encodeURIComponent(appId)}`),
+        fetch(`/api/applications/${encodeURIComponent(appId)}?light=1`),
         fetch("/api/applications"),
       ]);
       if (dossRes.ok) {
