@@ -8,49 +8,23 @@ web
 
 ## Stack
 
-Next.js (App Router), TypeScript, Tailwind CSS, Shadcn UI patterns, interactive HTML5 Canvas / SVG overlay for PDF & image forensics; Python FastAPI backend with OpenCV, PyMuPDF, pikepdf, imagehash, exifread, and SQLite/pgvector-compatible vector similarity storage (confirmed from brief; local SQLite + vector store fallback inferred for zero-config MVP execution).
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS, interactive SVG/Canvas overlays, 2D-to-3D CSS/WebGL Blueprint Room Extruder (`Blueprint3DViewer.tsx`), and the **Laya System-1 Non-Autoregressive Decision Engine** (`layaEngine.ts` / `laya_engine.py`); Python FastAPI backend with OpenCV, PyMuPDF, pikepdf, imagehash, exifread, and SQLite/pgvector-compatible vector similarity storage.
 
 ## Users
 
-- **AICTE Scrutiny Officer / Competent Authority (Primary Operate User):** Reviews institutional applications for Extension of Approval (EoA) and New Institutions under time pressure during AICTE scrutiny cycles. Inspects multi-document consistency, 3-layer X-Ray document forensics (QR-vs-OCR cross-lock, PDF metadata/incremental updates/font anomalies, Error Level Analysis & copy-move heatmaps), issuing authority API responses, and computer-vision infrastructure compliance flags before recording an immutable regulatory decision.
-- **Institution Nodal Officer (Secondary Operate User):** Uploads application forms, supporting PDFs (State NOC, Fire Safety Certificate, Affidavit, Building Completion & Floor Plans), and geotagged campus/lab photographs; runs pre-submission self-scrutiny to detect and rectify deficiencies prior to official AICTE submission.
+- **AICTE Scrutiny Officer / Competent Authority (Primary Operate User):** Triages submitted institutional applications on the Scrutiny Queue (`/`), inspects the 4-Way Cross-Document Consistency Table and APH 2024–2027 Checklist (`/applications/[appId]`), evaluates Laya System-1 calibrated decision primitives (`choice`, `score`, `noul` + What-If Counterfactual Simulator), examines 3-Layer Document Forensics (`/forensics` with QR-vs-OCR tethers, ELA, Sherloq JPEG Ghost Maps, `pyHanko` revision trees, and 2.8× Optical Loupe), and verifies physical infrastructure (`/infrastructure` with CV equipment counts, EXIF GPS distance, Side-by-Side Clone Comparison, and 2D-to-3D Blueprint Room Extrusion) before recording an immutable SHA-256 decision.
+- **Institution Nodal Officer (Secondary Operate User):** Submits new institutional application dossiers end-to-end (`/portal`) to dynamically generate the 4-Way Consistency Table and APH Checklist from OCR and forensics, or tests draft PDFs and campus photographs in the live pre-submission sandbox.
 
 ## Product Purpose
 
-Veritas is an intelligent, explainable pre-scrutiny copilot for AICTE (Problem Statement SIH26261). It automates preliminary validation of institutional approval applications against the AICTE Approval Process Handbook (APH 2024–2027) and historical institutional records, detects potential document tampering or cross-college photo recycling, verifies certificates with issuing authorities, and presents every AI finding as an evidence-linked advisory flag for human decision-making.
+Veritas is an intelligent, explainable pre-scrutiny copilot for AICTE (Problem Statement SIH26261). It automates preliminary validation of institutional approval applications against the AICTE Approval Process Handbook (APH 2024–2027) and historical institutional records, detects potential document tampering or cross-college photo recycling, verifies certificates with issuing authorities, and synthesizes calibrated System-1 decision recommendations via Laya while retaining final regulatory authority with human officials.
 
 ## Positioning
 
-Unlike generic OCR forms or black-box forgery detectors, Veritas cross-locks five orthogonal evidence streams in a single split-screen scrutiny workbench:
-1. Cross-document semantic consistency against AICTE APH norms and historical EoA records.
-2. 3-Layer "X-Ray" Document Forensics combining QR payload vs. printed OCR cross-lock, PDF incremental-save/font-span inspection, and pixel-level Error Level Analysis (ELA) + SIFT copy-move + noise variance grids.
-3. Simulated real-time Issuing Authority Source Verification (DigiLocker, State Higher Education NOC Portal, Municipal Fire Services, National Building Code Registry).
-4. Infrastructure Computer Vision & "Cross-College Clone Hunter" using perceptual hashing (`pHash`/`dHash`/wavelet hash + feature embeddings) and EXIF Haversine geo-temporal boundary checks to catch recycled lab photos across institutions.
-5. Immutable, cryptographic-hash-linked regulatory audit log where AI outputs remain strictly advisory and every officer override or approval is recorded with rationale.
-
-## Operating Context
-
-Used by AICTE scrutiny committees and institutional nodal officers during high-volume EoA and New Institution approval windows. Documents under inspection include multi-page scanned and born-digital PDFs (NOCs, Fire Safety Certificates, Affidavits on stamp paper, Architect-certified Floor Plans) and JPEG/PNG campus photographs with EXIF GPS tags. Officers work on desktop widescreen monitors in brightly lit government offices, scanning dense tabular checklists alongside high-zoom document canvases.
-
-## Capabilities and Constraints
-
-- All AI findings must be presented as **advisory indicators** linked to concrete visual/data evidence (bounding boxes, extracted values, APH clause citations), never as automated rejections.
-- Role-switcher capability between **AICTE Scrutiny Officer** (full forensic workbench, cross-college clone hunter, authority API trigger, decision & override log) and **Institution Nodal Officer** (live upload & real-time forensic/CV analyzer, preliminary deficiency self-check).
-- Real execution of Python forensic & CV pipelines on uploaded and pre-seeded synthetic AICTE dossier files (real PDF generation with embedded QR codes, intentional tampered PDFs with font/ELA/QR mismatches, geotagged lab photos, and cloned cross-college photos).
-
-## Brand Commitments
-
-- **Product Name:** Veritas
-- **Context:** All India Council for Technical Education (AICTE) — Ministry of Education, Government of India (SIH26261).
-- **Tone:** Authoritative, forensic, transparent, statutory, zero-hype.
-
-## Evidence on Hand
-
-- Synthetic benchmark AICTE institutional applications generated by the backend forensic seed engine (including authentic and deliberately tampered PDFs with QR-vs-OCR discrepancies, spliced signatures/ELA anomalies, incremental PDF updates, and geotagged/cloned lab photos) so every forensic algorithm runs live on real file bytes.
-
-## Product Principles
-
-1. **Evidence Over Verdicts:** Never show a bare "Fake" or "Rejected" score; always show the exact bounding box, the two conflicting values (e.g., QR payload `Intake: 120` vs. OCR printed `Intake: 180`), and the APH norm clause.
-2. **Split-Screen Co-Reference:** Clicking any checklist deficiency or forensic flag immediately focuses and highlights the exact region on the PDF/image canvas alongside the source record.
-3. **Human Authority by Design:** Every AI flag can be confirmed, escalated for physical EVC (Expert Visit Committee) inspection, or overridden with mandatory officer remarks logged to an immutable hash-chained audit trail.
-4. **Live Forensic Transparency:** Allow users and evaluators to upload any custom PDF or image—or mutate test parameters live—and inspect the real OpenCV ELA heatmap, noise inconsistency map, SIFT copy-move vectors, QR decode, and pHash Hamming distance in real time.
+Unlike generic OCR forms or black-box forgery detectors, Veritas cross-locks six orthogonal verification and decision streams across a 5-page Daylight Civic GovTech Portal:
+1. 4-Way Cross-Document Semantic Consistency against AICTE APH norms and historical EoA records.
+2. 3-Layer "X-Ray" Document Forensics combining QR payload vs. printed OCR cross-lock, `pikepdf`/`pyHanko` incremental-save & font-span inspection, and pixel-level OpenCV ELA + Sherloq JPEG Ghost Maps + 2D FFT Resampling + SIFT Copy-Move + 8×8 Laplacian Noise Grids.
+3. Issuing Authority Source Verification (DigiLocker, State Higher Education NOC Portal, Municipal Fire Services, Council of Architecture Registry, StockHolding e-Stamp).
+4. Infrastructure Computer Vision, 2D-to-3D Blueprint Room Norm Extrusion, and "Cross-College Clone Hunter" using 9-region perceptual hashing (`pHash`/`dHash`/`wHash` + 128-D feature embeddings) and EXIF Haversine geo-temporal boundary checks.
+5. **Laya Non-Autoregressive System-1 Decision Copilot** computing RLCD-calibrated `choice`, `score` ($\mathbb{E}[S]$ rubric), and `noul` ($P(\text{true})$) primitives in a single forward pass (`19 ms`) with interactive counterfactual simulation.
+6. Immutable, SHA-256 cryptographic-hash-linked regulatory audit log.

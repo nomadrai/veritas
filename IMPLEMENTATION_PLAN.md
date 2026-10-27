@@ -2,8 +2,8 @@
 
 > **Problem Statement:** SIH26261 — *AI-Powered Application Validation, Document Authentication and Regulatory Compliance Verification*  
 > **Organization:** All India Council for Technical Education (AICTE), Ministry of Education, Government of India  
-> **Current Baseline:** MVP v2.4 (Completed, Live & Verified)  
-> **Target Destination:** Phase 1–4 Full Production & SIH Grand Finale Architecture
+> **Current Baseline:** Full MVP + Stages 1–4 + Laya System-1 Decision Engine (Completed, Live & Verified on `https://veritas-aicte.vercel.app`)  
+> **Target Destination:** Phase 2–4 Enterprise Scale & SIH Grand Finale Rollout
 
 ---
 
@@ -73,18 +73,21 @@ Every candidate open-source library and research repository has been benchmarked
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 0 (COMPLETED): Core MVP v2.4                                                     │
+│ PHASE 0 (COMPLETED ✅): Core MVP v2.4                                                  │
 │ • 5-Page Daylight Civic Portal (Queue, Checklist, Forensics, Infrastructure, Portal)   │
 │ • 4-Way Consistency Engine + ELA / Noise Grid / SIFT Copy-Move + pHash Clone Hunter    │
 └──────────────────────────────────────────┬─────────────────────────────────────────────┘
                                            ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 1 (NEXT SPRINT): High-Impact CPU-Friendly Forensics & 3D Blueprint Showstoppers  │
-│ • 1.1: Sherloq JPEG Ghost Maps (60–95% Q Sweep) & 2D Resampling Periodicity Detector   │
-│ • 1.2: pyHanko PKCS#7 Cryptographic Validator & Incremental Revision Diff Tree         │
-│ • 1.3: PyMuPDF Native Table-Cell Extractor & Perspective-Dewarped QR Recovery          │
-│ • 1.4: 9-Region Multi-Crop & Flip-Invariant Clone Hunter (Survives 40% Crop/Flip)      │
-│ • 1.5: Interactive 2D-to-3D Floorplan Extrusion Viewer + Optical Forensic Loupe        │
+│ PHASE 1 & STAGES 1–4 + LAYA (COMPLETED & LIVE ON VERCEL ✅):                           │
+│ • Stage 1: Real End-to-End Dynamic Application Dossier Submission (`/portal`)          │
+│ • Stage 2: Live CV Equipment Detection (Monitors, Desks, Smart Boards, Fire Gear)      │
+│ • Stage 3: Distinct Forensic PDFs & Geotagged Campus Photos for All Queue Dossiers     │
+│ • Stage 4 (1.1–1.5): Sherloq JPEG Ghost Maps, 2D Resampling, pyHanko Revision Tree,    │
+│   9-Region Crop/Flip Clone Hunter, Interactive 2D-to-3D Blueprint Room Extruder,       │
+│   and 2.8x Optical Magnifier Loupe wired into the live UI                              │
+│ • Decision Layer: Laya Non-Autoregressive System-1 Decision Engine (`choice`, `score`, │
+│   `noul` RLCD primitives + Interactive What-If Counterfactual Simulator)               │
 └──────────────────────────────────────────┬─────────────────────────────────────────────┘
                                            ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
