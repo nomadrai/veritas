@@ -16,8 +16,10 @@ backend/__pycache__/
 backend/veritas.db
 backend/storage/
 
-# OS / Editor / Review captures
+# OS / Editor / Review captures / Vercel
 .DS_Store
 .env
 .env.*
 .impeccable/review/
+.vercel/
+frontend/.vercel/

@@ -1,52 +1,158 @@
-# VERITAS — AI-Powered Application Validation, Document Forensics & Infrastructure Compliance Platform for AICTE
+<div align="center">
 
-**Problem Statement:** SIH26261 (All India Council for Technical Education — Ministry of Education, Government of India)
+# VERITAS
 
-Veritas acts as an explainable, evidence-linked pre-scrutiny copilot for AICTE Scrutiny Officers, Expert Visit Committees (EVC), and Institutional Nodal Officers. Every AI finding is presented as an advisory flag linked to concrete visual and cryptographic evidence—never an opaque black-box rejection—while final statutory authority remains with AICTE officials.
+### AI-Powered Application Validation, 3-Layer Document Forensics, and Infrastructure Compliance Verification Platform for AICTE
+
+[![Live Demo on Vercel](https://img.shields.io/badge/Live_Demo-veritas--aicte.vercel.app-1E3A8A?style=for-the-badge&logo=vercel&logoColor=white)](https://veritas-aicte.vercel.app)
+[![Problem Statement](https://img.shields.io/badge/SIH_2026-PS_SIH26261-1D4ED8?style=for-the-badge)](https://veritas-aicte.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js_16-TypeScript-0F172A?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-OpenCV_&_PyMuPDF-0F766E?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-B45309?style=for-the-badge)](./LICENSE)
+
+**[Live Deployed Application](https://veritas-aicte.vercel.app)** · **[11-Page Technical Dossier (PDF)](./Veritas_AICTE_SIH26261_Technical_Dossier.pdf)** · **[Master Implementation Plan](./IMPLEMENTATION_PLAN.md)** · **[Design System Spec](./DESIGN.md)**
+
+</div>
 
 ---
 
-## Live Running Services
+## 1. Overview & Product Vision
 
-- **Frontend Workbench (Next.js 15 + TypeScript + Tailwind CSS):** `http://localhost:3000`
-- **Backend AI / Forensics / CV Pipeline (FastAPI + OpenCV + PyMuPDF + pikepdf + imagehash):** `http://localhost:8000` (Swagger Docs at `http://localhost:8000/docs`)
+**Veritas** is an explainable, evidence-linked pre-scrutiny copilot built for the **All India Council for Technical Education (AICTE)**, Ministry of Education, Government of India (**Problem Statement: SIH26261**).
 
-### Starting Manually
-```bash
-# 1. Start the Python FastAPI Forensics & CV Backend (Port 8000)
-cd backend
-./.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+When technical institutions apply for **Extension of Approval (EoA)**, **Increase in Intake**, or **New Institution Approval (LOA)** and upload supporting PDFs (State Government NOCs, Municipal Fire Safety Certificates, Sworn e-Stamp Affidavits, Architect-Certified Floor Plans) alongside geotagged campus photographs, Veritas automatically:
+1. Validates application fields against the **AICTE Approval Process Handbook (APH 2024 to 2027)** and historical institutional records.
+2. Runs **3-Layer "X-Ray" Document Forensics** to expose altered intake numbers, modified dates, font mismatches, incremental PDF edits, and cloned official seals.
+3. Verifies certificates directly against simulated/authorized **Issuing Authority Gateways** (DigiLocker, State Higher Education Portals, Municipal Fire Services, Council of Architecture).
+4. Inspects physical infrastructure using **Computer Vision**, **EXIF WGS84 Haversine GPS Verification**, and a national **Cross-College Clone Hunter** (`pHash` + 128-D `pgvector` embeddings).
 
-# 2. Start the Next.js Scrutiny Workbench (Port 3000)
-cd frontend
-npm run dev
+> **Human-in-the-Loop Statutory Safeguard:** All AI and forensic findings are presented as **evidence-linked advisory flags** tied to exact bounding-box coordinates and APH clause citations. Final scrutiny, EVC physical inspection directives, and regulatory decisions remain exclusively with competent AICTE authorities.
+
+---
+
+## 2. Live Portal Walkthrough (5 Dedicated Pages)
+
+Veritas is designed around a **daylight-first Civic GovTech UI** organized into five purpose-built pages so AICTE Scrutiny Officers and Institution Nodal Officers can work clearly and efficiently:
+
+### Page 1: AICTE Scrutiny Queue & Daily Triage (`/`)
+The landing workspace for AICTE staff. Displays assigned institutional dossiers ranked by pre-scrutiny risk, status filter tabs (`All Dossiers`, `Needs Review`, `Ready to Approve`), a 4-step workflow guide, and a Priority Findings sidebar with direct deep links to flagged exhibits.
+
+![Page 1: AICTE Scrutiny Queue](./docs/screenshots/page1_queue.png)
+
+### Page 2: Application Checklist & 4-Way Consistency Matrix (`/applications/[appId]`)
+Reconciles key institutional parameters across four sources (**Application Form** vs. **Printed Document OCR** vs. **Decoded QR / Authority API** vs. **Historical AICTE DB**), evaluates the clause-by-clause **APH 2024 to 2027 Checklist**, provides one-click **Issuing Authority Portal Re-Verification**, and records cryptographically signed officer dispositions.
+
+![Page 2: Application Checklist and Consistency Table](./docs/screenshots/page2_checklist.png)
+
+### Page 3: 3-Layer Document Forensics Studio (`/forensics`)
+Dedicated certificate inspection studio featuring interactive view modes (**Annotated Certificate**, **QR vs. Text Cross-Lock** with orthogonal SVG connector tethers, **Tamper Heatmap (ELA)** with live JPEG quality and contrast sliders, and **Seal Duplication Check**) paired with a plain-English 3-layer forensic breakdown.
+
+![Page 3: 3-Layer Document Forensics Studio](./docs/screenshots/page3_forensics.png)
+
+### Page 4: Infrastructure Computer Vision & Cross-College Clone Hunter (`/infrastructure`)
+Inspects campus and laboratory photographs against APH equipment and carpet-area norms, verifies **EXIF GPS coordinates** against the institution's 500m registered campus boundary, and provides a **Side-by-Side Cross-College Clone Comparator** when duplicate photos are detected across institutions.
+
+![Page 4: Infrastructure CV and Clone Hunter](./docs/screenshots/page4_infrastructure.png)
+
+### Page 5: Nodal Officer Pre-Submission Self-Check & Audit Log (`/portal`)
+Allows **Institution Nodal Officers** to upload draft PDFs or JPEG/PNG campus photos (or run 1-click synthetic test specimens) for instant pre-scrutiny validation before formal submission, and displays the **Immutable SHA-256 Hash-Chained Regulatory Audit Trail**.
+
+---
+
+## 3. Core Modules & Unique Selling Propositions (USPs)
+
+| Module | Core USP | Technical Mechanism |
+|---|---|---|
+| **Module 1: OCR & Consistency Engine** | **4-Way Semantic Reconciliation** | Uses `PyMuPDF` (`get_text("dict")` & `find_tables()`) to extract fields and normalized `[x, y, w, h]` bounding boxes, cross-checking Application Form values against Printed OCR, QR Payloads, and AICTE Historical EoA records. |
+| **Module 2: 3-Layer Document Forensics** | **QR-vs-OCR Cross-Lock + PDF Container + Pixel ELA/SIFT** | **Layer 1:** Multi-pass OpenCV `QRCodeDetector` + CLAHE homography dewarping compares signed QR JSON payloads against printed OCR text.<br>**Layer 2:** `pikepdf` & `pyHanko`-style inspection of `%%EOF` incremental saves, `/Producer` tags (`Adobe Photoshop`), `/ModDate` deltas, and span-level font anomalies (`Courier` injected into `Helvetica`).<br>**Layer 3:** JPEG Recompression Error Level Analysis (ELA) $z$-score clustering, Multi-Quality JPEG Ghost Maps, 8x8 Laplacian Noise Variance Grids, and SIFT Keypoint Copy-Move seal duplication detection. |
+| **Module 3: Issuing Authority Sync** | **5-State Statutory Registry Verification** | Connects to simulated authoritative endpoints (DigiLocker / Maharashtra DHTE e-NOC, Municipal Fire Portal, Council of Architecture, StockHolding e-Stamp) and classifies status into `Verified`, `Mismatch Detected`, `Expired`, `Pending`, or `Manual Review Required`. |
+| **Module 4: Infrastructure CV & Clone Hunter** | **Multi-Patch `pHash` + 128-D `pgvector` + EXIF Haversine GPS** | Computes 64-bit `pHash`, `dHash`, `aHash`, `wHash` (including 9-region multi-crop and horizontal flip signatures) plus 128-D spatial color/Sobel feature vectors to catch recycled lab photos across colleges. Extracts EXIF GPS coordinates via `exifread` to verify distance from the registered campus center. |
+| **Module 5: Explainable Audit Ledger** | **SHA-256 Hash-Chained Decisions** | Every automated rule check, AI confidence score, authority API response, and officer override is chained with SHA-256 (`prev_hash` -> `entry_hash`). |
+
+---
+
+## 4. Technology Stack
+
+| Layer | Technologies Used |
+|---|---|
+| **Frontend Portal** | `Next.js 16` (App Router), `React 19`, `TypeScript 5.7`, `Tailwind CSS 3.4`, `Lucide Icons`, Interactive SVG/Canvas Forensics & 3D Blueprint Extrusion |
+| **Backend API** | `Python 3.12+`, `FastAPI`, `Uvicorn`, `Pydantic v2`, `python-multipart` |
+| **PDF & Cryptographic Forensics** | `PyMuPDF (fitz) 2.0`, `pikepdf 10.17` (QPDF C++ bindings), `pyHanko` incremental revision & signature diff patterns |
+| **Image Forensics & Computer Vision** | `OpenCV 5.0` (`cv2`), `NumPy`, `SciPy`, `Pillow 13.0`, `imagehash 4.3` (`PyWavelets`), `exifread 3.5`, `piexif`, `qrcode` |
+| **Database & Vector Search** | `PostgreSQL 16` + `pgvector` (`vector(128)` IVFFlat cosine index in `backend/schema_pgvector.sql`) + zero-config local `SQLite3` engine |
+
+---
+
+## 5. Repository Structure
+
+```text
+Veritas/
+├── README.md                                                # Project documentation
+├── LICENSE                                                  # MIT License
+├── IMPLEMENTATION_PLAN.md                                   # Multi-phase engineering roadmap & 15-tool audit
+├── PRODUCT.md                                               # Product context & user roles
+├── DESIGN.md                                                # Daylight Civic Portal design system specification
+├── Veritas_AICTE_SIH26261_Technical_Dossier.pdf             # 11-Page Technical & Product Dossier PDF
+├── docker-compose.yml                                       # PostgreSQL (pgvector) + Backend + Frontend stack
+├── backend/
+│   ├── main.py                                              # FastAPI server & REST endpoints
+│   ├── database.py                                          # SQLite persistence & SHA-256 audit logger
+│   ├── schema_pgvector.sql                                  # PostgreSQL + pgvector production DDL
+│   ├── forensics_engine.py                                  # 3-Layer X-Ray Document Forensics engine
+│   ├── cv_engine.py                                         # Clone Hunter (pHash + 128-D) & EXIF GPS verifier
+│   ├── seed_generator.py                                    # Programmatic synthetic PDF & geotagged photo generator
+│   ├── requirements.txt                                     # Python dependencies
+│   └── pipelines/                                           # Modular Phase 1-4 pipeline extensions
+│       ├── forensics/jpeg_ghost.py                          # Multi-quality JPEG Ghost & 2D Resampling detector
+│       ├── pdf_crypto/pyhanko_verifier.py                   # PDF revision tree & font subset inspector
+│       ├── ocr_layout/table_extractor.py                    # Native table-cell bbox parser & QR dewarper
+│       ├── clone_hunter/multipatch_indexer.py               # 9-Region crop/flip-invariant perceptual hasher
+│       ├── infra_cv/detector_supervision.py                 # 2D-to-3D floorplan room extruder & zone occupancy
+│       └── reporting/show_cause_generator.py                # Automated AICTE Show-Cause Notice PDF generator
+└── frontend/
+    └── src/
+        ├── app/
+        │   ├── page.tsx                                     # Page 1: AICTE Scrutiny Queue & Triage
+        │   ├── applications/[appId]/page.tsx                # Page 2: APH Checklist & 4-Way Consistency
+        │   ├── forensics/page.tsx                           # Page 3: 3-Layer Document Forensics Studio
+        │   ├── infrastructure/page.tsx                      # Page 4: Infrastructure CV & Clone Comparator
+        │   ├── portal/page.tsx                              # Page 5: Nodal Self-Check & SHA-256 Audit Log
+        │   └── api/[...slug]/route.ts                       # FastAPI proxy + serverless snapshot handler
+        └── components/
+            ├── AppShell.tsx                                 # Shared 5-page Civic GovTech navigation shell
+            ├── LiveUploadSandbox.tsx                        # Live file upload diagnostic component
+            ├── floorplan3d/Blueprint3DViewer.tsx            # Interactive 2D-to-3D room norm extruder
+            └── forensics/ForensicLoupe.tsx                  # Optical magnifier loupe component
 ```
 
 ---
 
-## Core Modules & Open-Source Forensic Stack Implemented
+## 6. Local Development & Quickstart
 
-1. **Intelligent OCR & Cross-Document Consistency Engine (`backend/forensics_engine.py`, `backend/seed_generator.py`)**
-   - Uses `PyMuPDF` (`get_text("dict")`) to extract key fields (`Institution ID`, `Sanctioned Intake`, `Course Name`, `Certificate No`, `Issue/Expiry Dates`, `Carpet Area sq.m`) along with exact normalized bounding boxes.
-   - Reconciles extracted fields four ways across: **(a) Application Form**, **(b) Printed Document OCR**, **(c) Embedded QR / Issuing Authority API**, and **(d) Historical AICTE EoA Database & APH 2024–2027 Norms**.
+### 1. Start the Python FastAPI Forensics & CV Backend (Port 8000)
 
-2. **3-Layer "X-Ray" Document Forensics (`backend/forensics_engine.py`)**
-   - **Layer 1 · QR-vs-OCR Cross-Lock:** Uses OpenCV `cv2.QRCodeDetector()` with multi-pass thresholding to decode embedded QR payloads and draw orthogonal SVG cross-lock tethers on the optical canvas when the QR payload (`approved_intake: 120` or `valid_upto: 2025-03-31`) contradicts printed OCR text (`180 Seats` or `2026-12-31`).
-   - **Layer 2 · PDF Structural, Incremental Save & Span-Level Font Forensics:** Uses `pikepdf` and `PyMuPDF` to inspect `/Producer`, `/Creator`, `/CreationDate` vs `/ModDate` deltas, raw `%%EOF` incremental update trailers, PKCS#7 `/Sig` status, and span-level typography—catching injected `Courier` spans inside `Helvetica` certificates.
-   - **Layer 3 · Visual Tamper Heatmap (ELA + Laplacian Noise Grid + SIFT Copy-Move):**
-     - **Error Level Analysis (ELA):** Live configurable JPEG recompression (`50%–98%` quality, `6×–38×` gain) with 16×16 block z-score clustering to localize spliced text/signatures.
-     - **Laplacian Noise Variance Grid (8×8):** High-pass sensor/scanner noise consistency analysis (inspired by *Sherloq* / *Splicebuster* / Mahdian & Saic) to highlight digital overlays.
-     - **SIFT Copy-Move Forgery Detection:** OpenCV `SIFT_create()` + `BFMatcher` knnMatch + Lowe's ratio test + spatial displacement clustering to detect cloned official stamps/seals on the same certificate.
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-3. **Issuing Authority Source Verification (`POST /api/authority/verify/{doc_id}`)**
-   - Connects to simulated authoritative endpoints (DigiLocker / Maharashtra DHTE e-NOC Portal, Pune Municipal Corporation Fire Portal, Council of Architecture Registry, StockHolding e-Stamping CRA) and classifies status into: `Verified`, `Mismatch Detected`, `Expired`, `Pending`, or `Manual Review Required`.
+# Starts FastAPI on http://127.0.0.1:8000 and auto-generates synthetic AICTE PDFs & EXIF JPEGs
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
 
-4. **Infrastructure Computer Vision, EXIF Geo-Temporal Verifier & "Cross-College Clone Hunter" (`backend/cv_engine.py`)**
-   - **Cross-College Clone Hunter:** Computes 64-bit Perceptual Hash (`pHash`), Difference Hash (`dHash`), Average Hash (`aHash`), Wavelet Hash (`wHash`) via `imagehash`, plus a 128-D normalized spatial color/gradient feature vector (`schema_pgvector.sql` compatible with PostgreSQL `pgvector`). Catches `MEDIA-8841-LAB` as a 96.9% clone (`pHash` Hamming distance = 8, Cosine Similarity = 100%) of a historical 2025 EoA photo from *Deccan College of Engineering, Nagpur*.
-   - **EXIF Geo-Temporal Verification:** Uses `exifread` and WGS84 Haversine distance calculation to verify photo GPS coordinates against the institution's 500m registered campus boundary (catching the Nagpur GPS coordinates `624.1 km` away from the registered Pune campus).
-   - **AICTE APH 2024–2027 CV & Floor Plan Checks:** Evaluates UG Classroom carpet area (`CR-102 = 48.0 sq.m` vs required `66.0 sq.m` for 60 intake), student seating count (`38` vs `60`), computer terminal ratio, fire safety gear, and 1:12 barrier-free wheelchair ramp norms.
+### 2. Start the Next.js Multi-Page Portal (Port 3000)
 
-5. **Explainable Split-Screen Scrutiny Workbench, Live Upload Sandbox & SHA-256 Audit Trail**
-   - Role switcher between **AICTE Scrutiny Officer** and **Institution Nodal Officer**.
-   - **Live Upload Lab (`POST /api/live-analyze`):** Upload any custom PDF or JPEG/PNG (or trigger 1-click synthetic specimens) to run the entire Python OpenCV + PyMuPDF + `imagehash` pipeline live.
-   - **Immutable Audit Trail:** Every automated rule check, authority API response, and human officer decision/override is chained with SHA-256 (`prev_hash` → `entry_hash`).
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open **`http://localhost:3000`** in your browser, or explore the live cloud deployment at **`https://veritas-aicte.vercel.app`**.
+
+---
+
+## 7. License
+
+Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for full details.
